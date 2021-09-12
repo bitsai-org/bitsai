@@ -1,5 +1,5 @@
 import Box from '@material-ui/core/Box'
-import React, { useState, useEffect } from 'react';
+import React, { useState, } from 'react';
 
 import Checkbox from '@material-ui/core/Checkbox'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
