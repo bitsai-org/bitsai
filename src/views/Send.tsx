@@ -1,13 +1,20 @@
+import {useState} from 'react'
+
+import styled from 'styled-components'
+
 import Box from '@material-ui/core/Box'
 import TextField from '@material-ui/core/TextField'
-import styled from 'styled-components'
+import Button from '@material-ui/core/Button'
+
 import AddressInputs from '../components/Send/AddressInputs'
+import Summary from '../components/Send/Summary'
 
 const TextFieldStyled = styled(TextField)`
   background-color: white;
 `
 
 const Send = (): JSX.Element => {
+  const [signed, setSigned] = useState(false)
   return (
     <>
       <Box fontSize="2rem" mb="2rem" display="flex" justifyContent="center">
@@ -46,6 +53,20 @@ const Send = (): JSX.Element => {
           <Box mt="1rem">
             <AddressInputs />
           </Box>
+          <Box mt="2rem">
+            <Summary/>
+          </Box>
+          <Box mt="2rem" display="flex" justifyContent="center">
+            <Button onClick={()=>{setSigned(true)}} variant="contained" size="large">
+              Sign
+            </Button>
+            <Box ml="1rem">
+              <Button disabled={!signed} variant="contained" size="large">
+                Broadcast
+              </Button>
+            </Box>
+          </Box>
+
         </Box>
       </Box>
     </>
