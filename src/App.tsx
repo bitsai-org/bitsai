@@ -1,10 +1,13 @@
+import { BrowserRouter as Router, Switch, Route, Link} from "react-router-dom"
+import styled from 'styled-components'
+
 import Home from './views/Home'
 import Send from './views/Send'
-import HistoryC from './views/History'
 import Receive from './views/Receive'
+import HistoryC from './views/History'
+
 import Box from '@material-ui/core/Box'
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import IconButton from '@material-ui/core/IconButton'
 
 function App() {
@@ -18,15 +21,15 @@ function App() {
             <Home />
           </Route>
           <Route exact path="/send">
-            <IconButton href="/"><ArrowBackIcon/></IconButton>
+            <StyledLink to="/"><IconButton><ArrowBackIcon/></IconButton></StyledLink>
             <Send/>
           </Route>
           <Route exact path="/receive">
-            <IconButton href="/"><ArrowBackIcon/></IconButton>
+            <StyledLink to="/"><IconButton><ArrowBackIcon/></IconButton></StyledLink>
             <Receive/>
           </Route>
           <Route exact path="/history">
-            <IconButton href="/"><ArrowBackIcon/></IconButton>
+            <StyledLink to="/"><IconButton><ArrowBackIcon/></IconButton></StyledLink>
             <HistoryC/>
           </Route>
         </Switch>
@@ -34,5 +37,9 @@ function App() {
     </Box>
   )
 }
+
+const StyledLink = styled(Link)`
+  text-decoration: none !important;
+`
 
 export default App;

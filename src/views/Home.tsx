@@ -2,6 +2,7 @@
 import Box from '@material-ui/core/Box'
 import Button from '@material-ui/core/Button'
 import styled from 'styled-components'
+import {Link} from 'react-router-dom'
 
 const Home = (): JSX.Element => {
   return (
@@ -16,22 +17,26 @@ const Home = (): JSX.Element => {
         marginTop="20vh"
         fontSize="5rem"
       >
-        <A href="/history">
+        <HistoryLink to="/history">
           <p>200000 Sats</p>
-        </A>
+        </HistoryLink>
       </Box>
 
       <Box
         marginTop="15vh"
         display="flex"
       >
-        <Button href="/send" variant="contained" size="large">
-          SEND
-        </Button>
-        <Box marginLeft="2rem">
-          <Button href="/receive" variant="contained" size="large">
-            RECEIVE
+        <StyledLink to="/send">
+          <Button variant="contained" size="large">
+            SEND
           </Button>
+        </StyledLink>
+        <Box marginLeft="2rem">
+          <StyledLink to="/receive">
+            <Button variant="contained" size="large">
+              RECEIVE
+            </Button>
+          </StyledLink>
         </Box>
       </Box>
 
@@ -39,7 +44,10 @@ const Home = (): JSX.Element => {
   )
 }
 
-const A = styled('a')`
+const StyledLink = styled(Link)`
+  text-decoration: none !important;
+`
+const HistoryLink = styled(Link)`
   text-decoration: none !important;
   color: inherit;
   &:hover {
