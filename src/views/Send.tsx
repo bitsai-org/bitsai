@@ -35,7 +35,6 @@ const Send = (): JSX.Element => {
             <TextFieldStyled
               label="To"
               variant="filled"
-              color="secondary"
             />
           </Box>
           <Box mt="1rem">
