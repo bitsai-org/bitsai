@@ -26,10 +26,10 @@ import reportWebVitals from './reportWebVitals';
 `*/}
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-    {/*<AppStyled/>*/}
-  </React.StrictMode>,
+  //<React.StrictMode>
+    <App />,
+    //<AppStyled/>
+  //</React.StrictMode>,
   document.getElementById('root')
 );
 
