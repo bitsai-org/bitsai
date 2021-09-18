@@ -9,8 +9,9 @@ import Button from '@material-ui/core/Button'
 import AddressInputs from '../components/Send/AddressInputs'
 import Summary from '../components/Send/Summary'
 
-const TextFieldStyled = styled(TextField)`
+const TextField_ = styled(TextField)`
   background-color: white;
+  width: 100%;
 `
 
 const Send = (): JSX.Element => {
@@ -32,19 +33,19 @@ const Send = (): JSX.Element => {
           width="50%"
         >
           <Box>
-            <TextFieldStyled
+            <TextField_
               label="To"
               variant="filled"
             />
           </Box>
           <Box mt="1rem">
-            <TextFieldStyled
+            <TextField_
               label="Sats"
               variant="filled"
             />
           </Box>
           <Box mt="1rem">
-            <TextFieldStyled
+            <TextField_
               label="Fee (sat/byte)"
               variant="filled"
             />
