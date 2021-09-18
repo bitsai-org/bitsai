@@ -1,5 +1,6 @@
 import React from 'react'
 
+import MuiHistoryTable from '../components/HistoryC/MuiHistoryTable'
 import HistoryTable from '../components/HistoryC/HistoryTable'
 
 import Box from '@material-ui/core/Box'
@@ -14,9 +15,8 @@ const HistoryC = (): JSX.Element => {
         </h2>
       </Box>
       <Box display="flex" flexDirection="column" alignItems="center">
-        {/*<Box display="flex" flexDirection="row">
-        </Box>*/}
         <HistoryTable />
+        {/*<MuiHistoryTable />*/}
       </Box>
     </>
   )

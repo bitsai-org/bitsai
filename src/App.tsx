@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import Home from './views/Home'
 import Send from './views/Send'
 import Receive from './views/Receive'
-import HistoryC from './views/History'
+import HistoryC from './views/HistoryC'
 
 import Box from '@material-ui/core/Box'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
