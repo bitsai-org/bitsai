@@ -43,7 +43,7 @@ const CopyCpNotification = (props: Props): JSX.Element => {
         message="Note archived"
       >
         <Alert onClose={handleClose} severity="info">
-          Copied address to clipboard
+          Address copied to clipboard
         </Alert>
       </Snackbar>
       {/*<Snackbar
