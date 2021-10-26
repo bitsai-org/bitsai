@@ -8,6 +8,7 @@ const emptyWallet: Wallet = {
     external: [],
     change:   [],
   },
+  xpub: '',
 }
 
 const walletSlice = createSlice({
