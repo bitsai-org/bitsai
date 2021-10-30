@@ -1,8 +1,5 @@
-import React, {useState, useEffect} from 'react'
-import {useSelector, useDispatch} from 'react-redux'
+import {useState} from 'react'
 
-import {walletActions} from '../store/store'
-import persistedWallet from '../persist/data'
 import auth from '../persist/auth'
 import walletUtils from '../lib/walletUtils'
 
@@ -36,28 +33,9 @@ const GenerateWallet = (): JSX.Element => {
   }
 
   const handleStart = () => {
-    let encryptedMnemonicSeed
-    let hashedPassword
     if (credentials && mnemonicSeed) {
-      //hash password and encrypt with it the mnemonic seed
-      hashedPassword = CryptoJS.SHA256(credentials.password).toString()
-      encryptedMnemonicSeed = CryptoJS.AES.encrypt(
-        mnemonicSeed,
-        hashedPassword,
-      )
-    }
-    if (credentials && mnemonicSeed && encryptedMnemonicSeed && hashedPassword) {
-      const wallet = walletUtils.generateWallet(
-        credentials,
-        mnemonicSeed,
-        encryptedMnemonicSeed.toString(),
-      )
-      walletUtils.persistWallet(wallet, hashedPassword)
-      //authenticate
-      auth.authenticate(wallet, hashedPassword)
-      //redirect to homepage
+      walletUtils.generateWallet(credentials, mnemonicSeed)
       window.location.href = '/#/'
-      //window.location.replace('/')
     }
   }
 
