@@ -8,7 +8,12 @@ const emptyWallet: Wallet = {
     external: [],
     change:   [],
   },
+  unusedAddresses: {
+    external: [],
+    change:   [],
+  },
   xpub: '',
+  hashedPassword_SHA256: '',
 }
 
 const walletSlice = createSlice({
@@ -19,6 +24,12 @@ const walletSlice = createSlice({
   reducers: {
     setWallet(state, actions) {
       state.wallet = actions.payload.wallet
+    },
+    setAddresses(state, actions) {
+      state.wallet.addresses = actions.payload.addresses
+    },
+    setUnusedAddresseses(state, actions) {
+      state.wallet.unusedAddresses = actions.payload.unusedAddresseses
     },
     clearWallet(state) {
       state.wallet = emptyWallet

@@ -43,7 +43,7 @@ const Login = (props: Props): JSX.Element => {
         const wallet: Wallet = JSON.parse(
         res.toString(CryptoJS.enc.Utf8)
       )
-      auth.authenticate(wallet, hashedPassword)
+      auth.authenticate(wallet)
     } catch {
       setIncorrectPassword(true)
     }

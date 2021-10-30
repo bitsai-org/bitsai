@@ -15,7 +15,6 @@ import persistedWallet from '../persist/data'
 
 const FirstPage = (): JSX.Element => {
 
-  const [persistedWalletExists, setPersistedWalletExists] = useState(false)
   const [encryptedWallet, setEncryptedWallet] = useState<string | undefined>(undefined)
 
   useEffect(() => {

@@ -6,7 +6,6 @@ import store, {authActions, walletActions} from '../store/store'
 
 interface Auth {
   isAuthenticated: boolean,
-  hashedPassword: string | undefined,
   wallet: Wallet | undefined,
 }
 
@@ -28,10 +27,9 @@ const checkAuthentication = () => {
   }
 }
 
-const authenticate = (wallet: Wallet, hashedPassword: string) => {
+const authenticate = (wallet: Wallet) => {
     const auth: Auth = {
       isAuthenticated: true,
-      hashedPassword,
       wallet,
     }
     store.dispatch(authActions.authenticate())
@@ -48,10 +46,8 @@ const authenticate = (wallet: Wallet, hashedPassword: string) => {
 }
 
 const deAuthenticate = () => {
-    console.log('ha')
     const auth: Auth = {
       isAuthenticated: false,
-      hashedPassword: undefined,
       wallet: undefined,
     }
     sessionStorage.setItem(
