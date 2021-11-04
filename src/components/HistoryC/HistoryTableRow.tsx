@@ -1,31 +1,41 @@
-import React from 'react'
+import {Transaction} from '../../lib/walletUtils'
 
 import Box from '@material-ui/core/Box'
 
-interface Transaction {
-  date: string;
-  description: string;
-  amount: number;
-  status: string;
-}
 
 interface Props {
-  tx?: Transaction;
+  transaction?: Transaction;
 }
 
 const HistoryTableRow = (props: Props): JSX.Element => {
   let cols: any;
-  const colComponent = props.tx ? 'div' : 'h3';
-  if (props.tx) {
-    const tx = props.tx
-    cols = [tx.date, tx.description, tx.amount, tx.status]
+  const colComponent = props.transaction ? 'div' : 'h3';
+  if (props.transaction) {
+    const transaction = props.transaction
+    if (transaction.time)
+      cols = [
+        unixTimestampToDate(transaction.time),
+        transaction.type,
+        transaction.amount,
+        transaction.status,
+      ]
+    else
+      cols = [
+        'No time',
+        transaction.type,
+        transaction.amount,
+        transaction.status,
+      ]
+
   } else
-    cols = ['Date', 'Description', 'Amount', 'Status']
- 
+    cols = ['Time', 'Type', 'Amount', 'Status']
+
   return (
     <>
       <Box
         width="100%"
+        pb="0.2rem"
+        px="2.5vw"
         display="flex"
         justifyContent="center"
         flexDirection="row"
@@ -33,31 +43,36 @@ const HistoryTableRow = (props: Props): JSX.Element => {
         <Box
           //component="h3"
           component={colComponent}
-          width="20%"
+          width="25%"
         >
           {cols[0]}
        </Box>
         <Box
           component={colComponent}
-          width="20%"
+          width="25%"
         >
           {cols[1]}
         </Box>
         <Box
           component={colComponent}
-          width="20%"
+          width="25%"
         >
           {cols[2]}
         </Box>
         <Box
           component={colComponent}
-          width="20%"
+          width="25%"
         >
           {cols[3]}
         </Box>
       </Box>
     </>
   )
+}
+
+const unixTimestampToDate = (unixTimestamp: number): string => {
+  const date = new Date(unixTimestamp * 1000)
+  return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
 }
 
 export default HistoryTableRow;
