@@ -8,10 +8,7 @@ const emptyWallet: Wallet = {
     external: [],
     change:   [],
   },
-  unusedAddresses: {
-    external: [],
-    change:   [],
-  },
+  transactions: [],
   xpub: '',
   hashedPassword_SHA256: '',
 }
@@ -28,8 +25,8 @@ const walletSlice = createSlice({
     setAddresses(state, actions) {
       state.wallet.addresses = actions.payload.addresses
     },
-    setUnusedAddresseses(state, actions) {
-      state.wallet.unusedAddresses = actions.payload.unusedAddresseses
+    setTransctions(state, actions) {
+      state.wallet.transactions = actions.payload.transactions
     },
     clearWallet(state) {
       state.wallet = emptyWallet

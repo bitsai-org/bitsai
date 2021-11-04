@@ -28,41 +28,50 @@ const checkAuthentication = () => {
 }
 
 const authenticate = (wallet: Wallet) => {
-    const auth: Auth = {
-      isAuthenticated: true,
-      wallet,
-    }
+    setAuthWallet(wallet)
+
     store.dispatch(authActions.authenticate())
 
     store.dispatch(walletActions.setWallet({
       wallet: wallet,
     }))
-
-    // persist auth for current session
-    sessionStorage.setItem(
-      'auth',
-      JSON.stringify(auth),
-    )
 }
 
 const deAuthenticate = () => {
-    const auth: Auth = {
-      isAuthenticated: false,
-      wallet: undefined,
-    }
-    sessionStorage.setItem(
-      'auth',
-      JSON.stringify(auth),
-    )
+  clearAuthWallet()
 
-    store.dispatch(authActions.deAuthenticate())
-    store.dispatch(walletActions.clearWallet())
+  store.dispatch(authActions.deAuthenticate())
+  store.dispatch(walletActions.clearWallet())
+}
+
+const setAuthWallet = (wallet: Wallet) => {
+  const auth: Auth = {
+    isAuthenticated: true,
+    wallet,
+  }
+  // persist auth for current session
+  sessionStorage.setItem(
+    'auth',
+    JSON.stringify(auth),
+  )
+}
+
+const clearAuthWallet = () => {
+  const auth: Auth = {
+    isAuthenticated: false,
+    wallet: undefined,
+  }
+  sessionStorage.setItem(
+    'auth',
+    JSON.stringify(auth),
+  )
 }
 
 const auth = {
   authenticate,
   deAuthenticate,
   checkAuthentication,
+  setAuthWallet,
 }
 
 export default auth
