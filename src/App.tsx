@@ -1,6 +1,6 @@
 import { HashRouter as Router, Switch, Route, Link, Redirect} from "react-router-dom"
-import {useEffect, useState} from 'react'
-import {useSelector, useDispatch} from 'react-redux'
+import {useEffect} from 'react'
+import {useSelector} from 'react-redux'
 
 import styled from 'styled-components'
 
@@ -18,6 +18,7 @@ import LockIcon from '@material-ui/icons/Lock'
 import IconButton from '@material-ui/core/IconButton'
 
 import auth from './persist/auth'
+import walletUtils from './lib/walletUtils'
 
 const StyledLink = styled(Link)`
   text-decoration: none !important;
@@ -33,10 +34,17 @@ const App = (): JSX.Element => {
     auth.checkAuthentication()
   }, [])
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      walletUtils.syncWallet()
+      console.log('Syncing wallet...')
+    }
+  }, [isAuthenticated])
+
 
   return (
     <Box
-      px="10vw"
+      //px="10vw"
     >
       <Router>
         <Switch>

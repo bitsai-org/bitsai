@@ -6,7 +6,7 @@ import walletUtils from '../lib/walletUtils'
 import * as bip39 from 'bip39'
 import CryptoJS from 'crypto-js'
 
-import Form, {Credentials} from '../components/GenerateWallet/Form'
+import GenerateWalletForm, {Credentials} from '../components/GenerateWallet/GenerateWalletForm'
 import MnemonicInfo from '../components/GenerateWallet/MnemonicInfo'
 
 import Box from '@material-ui/core/Box'
@@ -52,11 +52,12 @@ const GenerateWallet = (): JSX.Element => {
           display="flex"
           justifyContent="center"
           flexDirection="column"
-          width="50%"
+          //width="50%"
+          width="80%"
         >
 
           {!mnemonicSeed &&
-          <Form onSubmit={(credentials, mnemonicSeedLanguage, type) => {
+          <GenerateWalletForm onSubmit={(credentials, mnemonicSeedLanguage, type) => {
             handleOnSubmit(credentials, mnemonicSeedLanguage, type)
           }}
           />
