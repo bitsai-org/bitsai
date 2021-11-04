@@ -38,7 +38,7 @@ interface Props {
   ) => void,
 }
 
-const Form = (props: Props): JSX.Element => {
+const GenerateWalletForm = (props: Props): JSX.Element => {
   const [walletName, setWalletName] = useState('')
   const [password, setPassword] = useState('')
   const [repeatedPassword, setRepeatedPassword] = useState('')
@@ -216,4 +216,4 @@ const Form = (props: Props): JSX.Element => {
 }
 
 export type {Credentials}
-export default Form
+export default GenerateWalletForm
