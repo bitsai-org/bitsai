@@ -30,10 +30,12 @@ const Receive = (): JSX.Element => {
   const [qrCodeUrl, setQrCodeUrl] = useState('')
   const [visibleNotification, setVisibleNotification] = React.useState(false)
   const [generatedAddress, setGeneratedAddress] = useState('')
+  const [unusedAddresses, setUnusedAddresses] = useState<Array<Address>>([])
+  const [oldUnusedAddressIndex, setOldUnusedAddressIndex] = useState<number | undefined>(undefined)
+
   const wallet: Wallet = useSelector((state: any) => {
     return state.walletSlice.wallet
   })
-
 
   const classes = useStyles();
 
@@ -45,12 +47,14 @@ const Receive = (): JSX.Element => {
       return document.execCommand('copy', true, generatedAddress)
   }
 
-  const generateAddress = () => {
-    const r = randomInt(0, 19)
-    const unusedAddresses = getUnusedAddresses(wallet.addresses.external)
-    const unusedAddress = unusedAddresses[r].segwitAddress
-    console.log(r)
-    console.log(unusedAddress)
+  const generateAddress = (newUnusedAddresses: Array<Address>) => {
+    let r = randomInt(0, 19)
+    if (oldUnusedAddressIndex !== undefined)
+      while (r === oldUnusedAddressIndex)
+        r = randomInt(0, 19)
+    setOldUnusedAddressIndex(r)
+    const unusedAddress = newUnusedAddresses[r].segwitAddress
+    console.log(unusedAddress, r)
     setGeneratedAddress(unusedAddress)
     generateQR(unusedAddress)
   }
@@ -70,9 +74,16 @@ const Receive = (): JSX.Element => {
   }
 
   useEffect(() => {
-    generateAddress()
-  }, [])
+    setUnusedAddresses(
+      getUnusedAddresses(wallet.addresses.external)
+    )
+  }, [wallet.addresses.external])
 
+  useEffect(() => {
+    const newUnusedAddresses = getUnusedAddresses(wallet.addresses.external)
+    setUnusedAddresses(newUnusedAddresses)
+    generateAddress(newUnusedAddresses)
+  }, [])
 
   return (
     <>
@@ -112,7 +123,7 @@ const Receive = (): JSX.Element => {
           <Button
             variant="contained"
             size="large"
-            onClick={generateAddress}
+            onClick={() => {generateAddress(unusedAddresses)}}
           >
             GENERATE
           </Button>

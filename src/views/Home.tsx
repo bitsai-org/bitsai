@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react'
-import {useSelector} from 'react-redux'
+import {useSelector, useDispatch} from 'react-redux'
+import {walletActions} from '../store/store'
 import walletUtils, {Wallet} from '../lib/walletUtils'
 
 //import theme from './../theme'
@@ -8,19 +9,12 @@ import Button from '@material-ui/core/Button'
 import styled from 'styled-components'
 import {Link} from 'react-router-dom'
 
-const Home = (): JSX.Element => {
-  const [satsBalance, setSatsBalance] = useState(0)
+//import PasswordPopup from '../components/Home/PasswordPopup'
 
+const Home = (): JSX.Element => {
   const wallet: Wallet = useSelector((state: any) => {
     return state.walletSlice.wallet
   })
-
-  useEffect(() => {
-    setSatsBalance(
-      walletUtils.getBalanceTotal(wallet.addresses)
-    )
-  }, [wallet.addresses])
-
 
   return (
     <Box
@@ -35,10 +29,9 @@ const Home = (): JSX.Element => {
         fontSize="5rem"
       >
         <HistoryLink to="/history">
-          <p>{satsBalance} Sats</p>
+          <p>{wallet.balance} Sats</p>
         </HistoryLink>
       </Box>
-
       <Box
         marginTop="15vh"
         display="flex"

@@ -4,7 +4,7 @@ import Login from '../components/FirstPage/Login'
 
 //import theme from './../theme'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
-import AttachFileIcon from '@material-ui/icons/AttachFile'
+import EcoIcon from '@material-ui/icons/Eco';
 
 import Box from '@material-ui/core/Box'
 import Button from '@material-ui/core/Button'
@@ -56,9 +56,11 @@ const FirstPage = (): JSX.Element => {
           </Button>
         </StyledLink>
         <Box marginLeft="2rem">
-          <Button variant="contained" size="large" endIcon={<AttachFileIcon/>}>
-            Select existing wallet
-          </Button>
+          <StyledLink to="/existing-seed">
+            <Button variant="contained" size="large" endIcon={<EcoIcon/>}>
+              Existing Seed
+            </Button>
+          </StyledLink>
         </Box>
       </Box>
 

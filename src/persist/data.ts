@@ -1,3 +1,6 @@
+import CryptoJS from 'crypto-js'
+import {Wallet} from '../lib/walletUtils'
+
 const getEncryptedWallet = (): string | undefined => {
   let encryptedWallet: string | null = localStorage.getItem('encryptedWallet')
   if (encryptedWallet === null)
@@ -7,13 +10,17 @@ const getEncryptedWallet = (): string | undefined => {
   }
 }
 
-const setEncryptedWallet = (encryptedWallet: string) => {
+const setWallet = (wallet: Wallet) => {
+  const encryptedWallet = CryptoJS.AES.encrypt(
+    JSON.stringify(wallet),
+    wallet.hashedPassword_SHA256,
+  ).toString()
   localStorage.setItem('encryptedWallet', encryptedWallet)
 }
 
 const persistedWallet = {
   getEncryptedWallet,
-  setEncryptedWallet,
+  setWallet,
 }
 
 export default persistedWallet

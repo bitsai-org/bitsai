@@ -3,6 +3,7 @@ import EcoIcon from '@material-ui/icons/Eco';
 
 interface Props {
   mnemonicSeed: string,
+  language?: string | undefined,
 }
 
 const MnemonicInfo = (props: Props): JSX.Element => {

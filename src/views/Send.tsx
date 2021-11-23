@@ -1,21 +1,24 @@
-import {useState} from 'react'
-
-import styled from 'styled-components'
+import {useState, useEffect} from 'react'
+import {useSelector} from 'react-redux'
 
 import Box from '@material-ui/core/Box'
-import TextField from '@material-ui/core/TextField'
-import Button from '@material-ui/core/Button'
 
-import AddressInputs from '../components/Send/AddressInputs'
-import Summary from '../components/Send/Summary'
-
-const TextField_ = styled(TextField)`
-  background-color: white;
-  width: 100%;
-`
+import SendForm from '../components/Send/SendForm'
+import walletUtils, {Wallet, AddressBalance} from '../lib/walletUtils'
 
 const Send = (): JSX.Element => {
-  const [signed, setSigned] = useState(false)
+  const wallet: Wallet = useSelector((state: any) => {
+    return state.walletSlice.wallet
+  })
+
+  const [addressesBalances, setAddressesBalances] = useState<Array<AddressBalance>>([])
+
+  useEffect(() => {
+    setAddressesBalances(
+      walletUtils.getAddressesBalances(wallet.addresses)
+    )
+  }, [wallet.addresses])
+
   return (
     <>
       <Box fontSize="2rem" mb="2rem" display="flex" justifyContent="center">
@@ -28,45 +31,13 @@ const Send = (): JSX.Element => {
           justifySelf="center"
           display="flex"
           justifyContent="center"
-          //alignItems="center"
           flexDirection="column"
-          width="50%"
+          width="80%"
+          //width="50%"
         >
-          <Box>
-            <TextField_
-              label="To"
-              variant="filled"
-            />
-          </Box>
-          <Box mt="1rem">
-            <TextField_
-              label="Sats"
-              variant="filled"
-            />
-          </Box>
-          <Box mt="1rem">
-            <TextField_
-              label="Fee (sat/byte)"
-              variant="filled"
-            />
-          </Box>
-          <Box mt="1rem">
-            <AddressInputs />
-          </Box>
-          <Box mt="2rem">
-            <Summary/>
-          </Box>
-          <Box mt="2rem" display="flex" justifyContent="center">
-            <Button onClick={()=>{setSigned(true)}} variant="contained" size="large">
-              Sign
-            </Button>
-            <Box ml="1rem">
-              <Button disabled={!signed} variant="contained" size="large">
-                Broadcast
-              </Button>
-            </Box>
-          </Box>
-
+          <SendForm
+            addressesBalances={addressesBalances}
+          />
         </Box>
       </Box>
     </>

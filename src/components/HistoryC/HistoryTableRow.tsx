@@ -21,7 +21,7 @@ const HistoryTableRow = (props: Props): JSX.Element => {
       ]
     else
       cols = [
-        'No time',
+        '~~~',
         transaction.type,
         transaction.amount,
         transaction.status,
@@ -72,7 +72,9 @@ const HistoryTableRow = (props: Props): JSX.Element => {
 
 const unixTimestampToDate = (unixTimestamp: number): string => {
   const date = new Date(unixTimestamp * 1000)
-  return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+  //return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+  //return date.toISOString().slice(0, 19)
+  return date.toLocaleString('en-GB')
 }
 
 export default HistoryTableRow;

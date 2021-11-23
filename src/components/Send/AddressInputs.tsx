@@ -9,7 +9,13 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-const AddressInputs = (): JSX.Element => {
+import {AddressBalance} from '../../lib/walletUtils'
+
+interface Props {
+  addressesBalances: Array<AddressBalance>
+}
+
+const AddressInputs = (props: Props): JSX.Element => {
   const [manualInputSelector, setManualInputSelector] = useState(false);
   const [accordionExpand, setAccordionExpand] = useState(false);
   const [inputAddresses, setInputAddresses] = useState(['adr1', 'adr2', 'adr3'])
@@ -36,7 +42,7 @@ const AddressInputs = (): JSX.Element => {
             color="default"/>
         }
         //label="Manual input selector"
-        label={<Box component="p" fontSize="1.3rem" fontFamily={fontFamily}>
+        label={<Box component="h3" fontSize="1.3rem" fontFamily={fontFamily}>
           Manual input selector
         </Box>}
       />
@@ -56,12 +62,12 @@ const AddressInputs = (): JSX.Element => {
         </AccordionSummary>
         <AccordionDetails>
           <Box display="flex" flexDirection="column">
-            {inputAddresses.map((address: string, index: number): JSX.Element =>
+            {props.addressesBalances.map((addressBalance: AddressBalance, index: number): JSX.Element =>
               <FormControlLabel
                 control={<Checkbox
                   inputProps={{ 'aria-label': 'manual-input-checkbox' }}
                   color="default"/>}
-                label={address}
+                label={addressBalance.segwitAddress}
                 key={index}
               />
             )}

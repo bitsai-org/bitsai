@@ -10,9 +10,12 @@ import {Credentials} from '../components/GenerateWallet/GenerateWalletForm'
 
 const bip32 = bitcoin.bip32
 const NETWORK = bitcoin.networks.regtest
-const BLOCKSTREAM_URL = 'http://localhost:3000'
+//const BLOCKSTREAM_URL = 'http://localhost:3000'
+const BLOCKSTREAM_URL = 'http://192.168.1.236:3000'
+//const NETWORK = bitcoin.networks.testnet
+//const BLOCKSTREAM_URL = 'https://blockstream.info/testnet/api'
 const GAP_LIMIT = 20
-
+const DERIVATION_PATH = `m/84'/0'/0'`
 
 interface Address {
   segwitAddress: string,
@@ -32,6 +35,7 @@ interface Wallet {
   transactions: Array<Transaction>
   xpub: string,
   hashedPassword_SHA256: string,
+  balance: number,
 }
 interface Transaction {
   time: number | undefined,
@@ -39,24 +43,51 @@ interface Transaction {
   amount: number,
   status: 'Confirmed' | 'Unconfirmed'
   tx: any,
-  from: string,
-  to: string,
   txid: string,
 }
 
-const persistWallet = (wallet: Wallet, hashedPassword_SHA256: string) => {
-  //encrypt wallet with the hashed password
-  const encryptedWallet = CryptoJS.AES.encrypt(
-    JSON.stringify(wallet),
+const decryptWallet = (
+  encryptedWallet: string,
+  password: string,
+): Wallet | undefined => {
+  const hashedPassword_SHA256 = CryptoJS.SHA256(password).toString()
+  const res = CryptoJS.AES.decrypt(
+    encryptedWallet,
     hashedPassword_SHA256,
-  ).toString()
-  persistedWallet.setEncryptedWallet(encryptedWallet)
+  )
+  console.log(res)
+  try {
+    const stringWallet = res.toString(CryptoJS.enc.Utf8)
+    const wallet: Wallet = JSON.parse(stringWallet)
+    return wallet
+  } catch {
+    return undefined
+  }
+}
+
+const decryptMnemonicSeed = (
+  encryptedMnemonicSeed: string,
+  password: string,
+): string | undefined => {
+  const hashedPassword_RIPEMD160 = CryptoJS.RIPEMD160(password).toString()
+  try {
+    const mnemonicSeed = CryptoJS.AES.decrypt(
+      encryptedMnemonicSeed,
+      hashedPassword_RIPEMD160,
+    ).toString(CryptoJS.enc.Utf8)
+    if (mnemonicSeed !== '')
+      return mnemonicSeed
+    else
+      return undefined
+  } catch {
+    return undefined
+  }
 }
 
 const getXpub = (mnemonicSeed: string): string => {
   const seed = bip39.mnemonicToSeedSync(mnemonicSeed)
   let hdNode = bip32.fromSeed(seed)
-  hdNode = hdNode.derivePath(`m/84'/0'/0'`)
+  hdNode = hdNode.derivePath(DERIVATION_PATH)
   return hdNode.neutered().toBase58()
 }
 
@@ -64,8 +95,8 @@ const generateWallet = (
   credentials: Credentials,
   mnemonicSeed: string,
 ) => {
-  /*Use the password hash ripemd160 to encrypt the mnemonic seed and sha256
-    to encrypt the whole wallet
+  /*Use the password hash ripemd160 to encrypt the mnemonic seed
+    and sha256 to encrypt the whole wallet
   */
   const hashedPassword_SHA256 = CryptoJS.SHA256(credentials.password).toString()
   const hashedPassword_RIPEMD160 = CryptoJS.RIPEMD160(credentials.password).toString()
@@ -84,9 +115,10 @@ const generateWallet = (
     transactions: [],
     xpub: xPub,
     hashedPassword_SHA256: hashedPassword_SHA256,
+    balance: 0,
   }
 
-  walletUtils.persistWallet(wallet, hashedPassword_SHA256)
+  persistedWallet.setWallet(wallet)
   auth.authenticate(wallet)
 }
 
@@ -164,7 +196,8 @@ const getBalanceFromUtxos = (utxos: Array<any>): number => {
   let sats = 0;
   if (utxos.length !== 0)
     for (const utxo of utxos)
-      sats += utxo.value
+      if (utxo.status.confirmed === true)
+        sats += utxo.value
   return sats
 }
 
@@ -177,35 +210,130 @@ const getBalanceTotal = (addresses: Addresses): number => {
   return sats
 }
 
+const getTransaction = (
+  segwitAddress: string,
+  tx: any,
+  transactions: Array<Transaction>,
+  changeAddresses: Array<Address>,
+): Transaction | undefined => {
+  //check if transaction is already fetched
+  if (transactions.some(transactionElem => transactionElem.txid === tx.txid))
+    return undefined
+
+  let transaction: Transaction = {
+    time: undefined,
+    type: 'in',
+    status: 'Unconfirmed',
+    amount: 0,
+    tx: undefined,
+    txid: '',
+  }
+
+  transaction.tx = tx
+  transaction.txid = tx.txid
+
+  transaction.type = 'in'
+  for (const vinElem of tx.vin)
+    if (vinElem.prevout.scriptpubkey_address === segwitAddress) {
+      transaction.type = 'out'
+      break
+    }
+  for (const voutElem of tx.vout)
+    if (voutElem.scriptpubkey_address === segwitAddress) {
+      transaction.type = 'in'
+      break
+    }
+
+  if (tx.status.confirmed) {
+    transaction.status = 'Confirmed'
+    transaction.time   = tx.status.block_time
+  } else {
+    transaction.status = 'Unconfirmed'
+    transaction.time   = undefined
+  }
+
+  if (transaction.type === 'out') {
+    for (const voutElem of tx.vout)
+      if (!changeAddresses.some(
+        (address) => address.segwitAddress === voutElem.scriptpubkey_address)
+      )
+        transaction.amount += voutElem.value
+    transaction.amount += tx.fee
+  } else if (transaction.type === 'in') {
+    for (const voutElem of tx.vout)
+      if (voutElem.scriptpubkey_address === segwitAddress)
+        transaction.amount += voutElem.value
+  }
+  return transaction
+}
+
+const getTransactionsFromAddress = async (
+  segwitAddress: string,
+  transactions: Array<Transaction>,
+  changeAddresses: Array<Address>,
+): Promise<[Array<Transaction>, number]> => {
+  try {
+    //shallow copy
+    let resTransactions: Array<Transaction> = [...transactions]
+    const isAuthenticated = store.getState().authSlice.isAuthenticated
+    if (!isAuthenticated)
+      throw 'Wallet is no longer authenticated'
+
+    const txs: any = await axios.get(
+      `${BLOCKSTREAM_URL}/address/${segwitAddress}/txs`
+    )
+    console.log('get')
+
+    const txsCount: number = txs.data.length
+
+    for (const tx of txs.data) {
+      const transaction = getTransaction(
+        segwitAddress,
+        tx,
+        resTransactions,
+        changeAddresses,
+      )
+      if (transaction)
+        resTransactions.push(transaction)
+    }
+    return [resTransactions, txsCount]
+  } catch(err) {
+    console.error(err)
+    throw 'error getting transaction from address'
+  }
+}
+
 const discoverAddresses = async (
   addresses: Array<Address>,
   addressType: 'external' | 'change',
   xPub: string,
+  transactions: Array<Transaction>,
+  changeAddresses: Array<Address>,
 ): Promise<[Array<Address>, Array<Transaction>]> => {
   try {
+    let resTransactions = [...transactions]
     let clonedAddresses = [...addresses]
     let resAddresses: Array<Address> = []
-    let transactions: Array<Transaction> = []
     let successiveUnusedCount = 0
 
     let i = 0
     while (successiveUnusedCount < GAP_LIMIT ) {
       while (i < clonedAddresses.length) {
-        //console.log('i', i)
         const address = clonedAddresses[i]
 
         const utxos = await getUtxos(address.segwitAddress)
-        const addressTransactions = await getTransactionsFromAddress(address.segwitAddress)
+        let txsCount: number
+        ;[resTransactions, txsCount] = await getTransactionsFromAddress(
+          address.segwitAddress,
+          resTransactions,
+          changeAddresses,
+        )
         let addressIsUsed: boolean
 
-        //console.log("address", JSON.stringify(address))
-        //console.log("utxos", JSON.stringify(utxos))
-        if (addressTransactions.length === 0) {
-          //console.log('No utxo')
+        if (txsCount === 0) {
           successiveUnusedCount += 1
           addressIsUsed = false
         } else {
-          //console.log('yes utxo')
           addressIsUsed = true
           successiveUnusedCount = 0
         }
@@ -216,136 +344,89 @@ const discoverAddresses = async (
           utxos: utxos,
           used: addressIsUsed,
         })
-        for (const addressTransaction of addressTransactions)
-          transactions.push(addressTransaction)
 
         i++
-        //console.log('succ', successiveUnusedCount)
       }
       if (successiveUnusedCount < GAP_LIMIT) {
         const newAddressesCount = GAP_LIMIT - successiveUnusedCount
         const newAddresses = generateNewAddresses(xPub, i, newAddressesCount, addressType)
         clonedAddresses = [...resAddresses, ...newAddresses]
-        //console.log('newAddressesCount', newAddressesCount)
-        //console.log(JSON.stringify(newAddresses))
-        //console.log(JSON.stringify(mutAddresses))
       }
     }
-    return [resAddresses, transactions]
+    return [resAddresses, resTransactions]
   } catch(err) {
     console.error(err)
     throw 'Discover addresses error'
   }
 }
 
-
-const getTransaction = (segwitAddress: string, tx: any): Transaction => {
-  let transaction: Transaction = {
-    time: undefined,
-    type: 'in',
-    status: 'Unconfirmed',
-    amount: 0,
-    tx: undefined,
-    txid: '',
-    from: '',
-    to: '',
-  }
-
-  if (tx.vin.length > 1)
-    throw 'Error transaction type is not 1 to many'
-
-  //transaction.tx = tx
-  transaction.txid = tx.txid
-
-  if (tx.vin[0].prevout.scriptpubkey_address === segwitAddress) {
-    transaction.type = 'out'
-    transaction.from = segwitAddress
-    transaction.to   = tx.vout[tx.vin[0].vout].scriptpubkey_address
-  } else {
-    transaction.type = 'in'
-    transaction.from = tx.vin[0].prevout.scriptpubkey_address
-    transaction.to   = segwitAddress
-  }
-
-  if (tx.status.confirmed) {
-    transaction.status = 'Confirmed'
-    transaction.time   = tx.status.block_time
-  } else {
-    transaction.status = 'Unconfirmed'
-    transaction.time   = undefined
-  }
-  if (transaction.type === 'out')
-    transaction.amount = tx.vout[tx.vin[0].vout].value + tx.fee
-  else if (transaction.type === 'in')
-    for (const voutItem of tx.vout)
-      if (voutItem.scriptpubkey_address === segwitAddress)
-        transaction.amount += voutItem.value
-  return transaction
-}
-
-const getTransactionsFromAddress = async (
-  segwitAddress:string
-): Promise<Array<Transaction>> => {
+const syncWallet = async () => {
   try {
-    let transactions: Array<Transaction> = []
-
-    const txs: any = await axios.get(
-      `${BLOCKSTREAM_URL}/address/${segwitAddress}/txs`
+    store.dispatch(
+      authActions.setWalletIsSyncingTrue()
     )
 
-    for (const tx of txs.data) {
-      const transaction = getTransaction(segwitAddress, tx)
-      transactions.push(transaction)
+    console.log('Start syncing')
+    let wallet = store.getState().walletSlice.wallet
+    let syncedAddresses: Addresses = {
+      external: [],
+      change: [],
     }
-    return transactions
+    let transactions: Array<Transaction> = []
+
+    ;[syncedAddresses.external, transactions] = await discoverAddresses(
+      wallet.addresses.external,
+      'external',
+      wallet.xpub,
+      [],
+      wallet.addresses.change,
+    )
+
+    ;[syncedAddresses.change, transactions] = await discoverAddresses(
+      wallet.addresses.change,
+      'change',
+      wallet.xpub,
+      transactions,
+      wallet.addresses.change,
+    )
+
+    const balance = getBalanceTotal(syncedAddresses)
+
+    const isAuthenticated = store.getState().authSlice.isAuthenticated
+    if (! isAuthenticated)
+      throw 'Wallet is no longer authenticated'
+
+    store.dispatch(
+      walletActions.setAddresses({
+        addresses: syncedAddresses
+      })
+    )
+    store.dispatch(
+      walletActions.setTransctions({
+        transactions: transactions
+      })
+    )
+    store.dispatch(
+      walletActions.setBalance({
+        balance: balance
+      })
+    )
+
+    //update the wallet
+    wallet = store.getState().walletSlice.wallet
+
+    persistedWallet.setWallet(wallet)
+    auth.setAuthWallet(wallet)
+    console.log('End Syncing.')
+
   } catch(err) {
     console.error(err)
-    throw 'error getting transaction from address'
+    throw 'Failed syncing wallet'
+  } finally {
+    store.dispatch(
+      authActions.setWalletIsSyncingFalse()
+    )
   }
-}
-
-const syncWallet = async () => {
-  let wallet = store.getState().walletSlice.wallet
-  let syncedAddresses: Addresses = {
-    external: [],
-    change: [],
-  }
-  let externalTransactions, changeTransactions
-
-  ;[syncedAddresses.external, externalTransactions] = await discoverAddresses(
-    wallet.addresses.external,
-    'external',
-    wallet.xpub,
-  )
-
-  ;[syncedAddresses.change, changeTransactions] = await discoverAddresses(
-    wallet.addresses.change,
-    'change',
-    wallet.xpub,
-  )
-
-  const transactions = [...externalTransactions, ...changeTransactions]
-
-  store.dispatch(
-    walletActions.setAddresses({
-      addresses: syncedAddresses
-    })
-  )
-  store.dispatch(
-    walletActions.setTransctions({
-      transactions: transactions
-    })
-  )
-
-  //update the wallet
-  wallet = store.getState().walletSlice.wallet
-
-  const encryptedWallet = CryptoJS.AES.encrypt(
-    JSON.stringify(wallet),
-    wallet.hashedPassword_SHA256,
-  )
-  persistedWallet.setEncryptedWallet(encryptedWallet.toString())
-  auth.setAuthWallet(wallet)
 }
 
 interface AddressBalance {
@@ -384,12 +465,361 @@ const getAddressesBalances = (addresses: Addresses): Array<AddressBalance> => {
   return addressesBalances
 }
 
+const validateAddress = (address: string): boolean => {
+  try {
+    bitcoin.address.toOutputScript(address, NETWORK)
+    return true
+  } catch(err) {
+    return false
+  }
+}
+
+const getFirstUnusedAddressIndex = (addresses: Array<Address>): number => {
+  let i = 0;
+  for (const address of addresses) {
+    if (! address.used)
+      break
+    i++
+  }
+  return i
+}
+
+interface TransactionInput {
+  segwitAddress: string,
+  utxos: Array<{
+    utxo: any,
+    scriptPubKey: string,
+  }>,
+  sender: bitcoin.ECPairInterface,
+}
+
+interface InputAddress {
+  address: Address,
+  index: number,
+  type: 'external' | 'change',
+}
+
+const estimateTxSize = (nInputs: number, nOutputs: number) => {
+  //estimate transaction size in vBytes
+  const OVERHEAD = 11
+  const INPUTS  = nInputs  * 68
+  const OUTPUTS = nOutputs * 31
+  return OVERHEAD + INPUTS + OUTPUTS
+}
+
+const getScriptPubKeyFromUtxo = (
+  utxo: any,
+  transactions: Array<Transaction>
+): string => {
+  let scriptPubKey = ''
+  for (const transaction of transactions)
+    if (transaction.txid === utxo.txid)
+      scriptPubKey = transaction.tx.vout[utxo.vout].scriptpubkey
+
+  if (scriptPubKey === '')
+    throw `Error finding the transaction of utxo ${utxo.txid}`
+  return scriptPubKey
+}
+
+const getInputAddresses = (
+  sats: number,
+  feeRate: number,
+  addresses: Addresses,
+): [Array<InputAddress>, number, number, number] => {
+  let filledAddresses: Array<InputAddress> = []
+
+  addresses.external.forEach((address, i) => {
+    if (address.balance > 0)
+      filledAddresses.push({
+        address,
+        type: 'external',
+        index: i,
+      })
+  })
+  addresses.change.forEach((address, i) => {
+    if (address.balance > 0)
+      filledAddresses.push({
+        address,
+        type: 'change',
+        index: i,
+      })
+  })
+
+  //sort filled addresses in descending order
+  filledAddresses.sort((e1, e2) => e2.address.balance - e1.address.balance)
+
+  //pick which addresses to use in transaction
+  //approach used: pick as few utxos as possible using the more rich utxos
+  //first then the poor utxos next until the desired Sats are reached
+  let inputAddresses:  Array<InputAddress> = []
+  let satsPlusFee = sats
+  let estimatedTxSize = 0
+  let inputsSats = 0
+  let fee = 0
+  let utxosCount = 0
+  console.log('filled', filledAddresses)
+  for (const filledAddress of filledAddresses) {
+
+    //deep copy
+    const inputAddress = JSON.parse(JSON.stringify(
+      filledAddress
+    ))
+    inputAddress.address.utxos = []
+    for (const utxo of filledAddress.address.utxos) {
+      inputAddress.address.utxos.push(utxo)
+      inputsSats += utxo.value
+      utxosCount += 1
+      if (inputsSats >= satsPlusFee) {
+
+        //estimatedTxSize = estimateTxSize(inputAddresses.length, 2)
+        estimatedTxSize = estimateTxSize(utxosCount, 2)
+        fee = feeRate * estimatedTxSize
+        //rounding the fee because SATOSHIS are the smallest units of exchanges and
+        //they cant fractions they must always be integers
+        fee = Math.ceil(fee)
+
+        //add fee to sats to check if we need more inputs to cover the newly
+        //calculated fee
+        //satsPlusFee += fee
+        satsPlusFee = sats + fee
+
+        if (inputsSats >= satsPlusFee)
+          break
+      }
+    }
+    inputAddresses.push(inputAddress)
+  }
+  console.log('input', inputAddresses)
+  return [inputAddresses, inputsSats, fee, estimatedTxSize]
+}
+
+const getTransactionInputs = (
+  sats: number,
+  feeRate: number,
+  addresses: Addresses,
+  transactions: Array<Transaction>,
+  mnemonicSeed: string,
+): [Array<TransactionInput>, number, number, number] => {
+  const [
+    inputAddresses,
+    inputsSats,
+    fee,
+    estimatedTxSize,
+  ] = getInputAddresses(sats, feeRate, addresses)
+
+  let transactionInputs: Array<TransactionInput> = []
+
+  for (const inputAddress of inputAddresses) {
+    let resUtxos = []
+    for (const utxo of inputAddress.address.utxos)
+      resUtxos.push({
+        scriptPubKey: getScriptPubKeyFromUtxo(utxo, transactions),
+        utxo: utxo,
+      })
+
+    const seed = bip39.mnemonicToSeedSync(mnemonicSeed)
+    let hdNode = bip32.fromSeed(seed)
+    let typeIndex: number
+    if (inputAddress.type === 'external')
+      typeIndex = 0
+    else // if (inputAddress.type === 'change')
+      typeIndex = 1
+
+    hdNode = hdNode.derivePath(
+      `${DERIVATION_PATH}/${typeIndex}/${inputAddress.index}`
+    )
+
+    transactionInputs.push({
+      segwitAddress: inputAddress.address.segwitAddress,
+      utxos: resUtxos,
+      sender: bitcoin.ECPair.fromWIF(hdNode.toWIF())
+    })
+  }
+
+  return [transactionInputs, inputsSats, fee, estimatedTxSize]
+}
+
+const generateTransaction = (
+  toAddress: string,
+  sats: number,
+  feeRate: number,
+  wallet: Wallet,
+  mnemonicSeed: string,
+): [string, number, number] => {
+  let psbt = new bitcoin.Psbt({
+    'network': NETWORK
+  })
+
+  const [
+    transactionInputs,
+    inputsSats,
+    fee,
+    estimatedTxSize,
+  ] = getTransactionInputs(
+    sats,
+    feeRate,
+    wallet.addresses,
+    wallet.transactions,
+    mnemonicSeed,
+  )
+
+  //add inputs
+  for (const transactionInput of transactionInputs)
+    for (const utxo of transactionInput.utxos)
+      psbt.addInput({
+        hash: utxo.utxo.txid,
+        index: utxo.utxo.vout,
+        witnessUtxo: {
+          script: Buffer.from(utxo.scriptPubKey, 'hex'),
+          value: utxo.utxo.value,
+        },
+      })
+
+  //add output
+  psbt.addOutput({
+    address: toAddress,
+    value: sats,
+  })
+
+  console.log(fee)
+  //send rest inputsSats to an unused change address
+  if (sats < inputsSats - fee) {
+    const i = getFirstUnusedAddressIndex(wallet.addresses.change)
+    const unusedChangeAddress = wallet.addresses.change[i]
+    psbt.addOutput({
+      address: unusedChangeAddress.segwitAddress,
+      value: inputsSats - sats - fee,
+    })
+  }
+
+  //sign inputs
+  let i = 0
+  for (const transactionInput of transactionInputs)
+    for (const _ of transactionInput.utxos) {
+      psbt.signInput(i, transactionInput.sender)
+      i++
+    }
+
+  if (!psbt.validateSignaturesOfAllInputs())
+    throw 'Error: could not validate transaction inputs'
+
+  psbt.finalizeAllInputs()
+  const rawTx = psbt.extractTransaction().toHex()
+  return [rawTx, fee, estimatedTxSize]
+}
+
+const broadcastTransaction = async (rawTx: string): Promise<any> => {
+  try {
+    const txid = await axios.post(`${BLOCKSTREAM_URL}/tx`, rawTx)
+    return txid.data
+  } catch(err) {
+    console.error(err)
+    throw 'Cannot broadcast transaction'
+  }
+}
+
+//not using it for now
+interface BlockstreamFeeEstimate {
+  feeRate: number,
+  block: number,
+}
+const getFeeEstimates = async (): Promise<Array<BlockstreamFeeEstimate>> => {
+  try {
+    const res = await axios.get<Array<any>>(`${BLOCKSTREAM_URL}/fee-estimates`)
+    const l = Object.entries(res.data).map(item=> [Number(item[0]), item[1]])
+    l.sort((e1, e2) => e1[0] - e2[0])
+
+    const feeEstimates: Array<BlockstreamFeeEstimate> = []
+    for (const item of l) {
+      feeEstimates.push({
+        block: item[0],
+        feeRate: item[1],
+      })
+    }
+
+    return feeEstimates
+    //return JSON.parse(feeEstimatesJson)
+  } catch(err) {
+    console.error(err)
+    throw 'failed to get fee estimates'
+  }
+}
+
+{/*const feeEstimatesJson = `
+  [{
+      "block": 1,
+      "feeRate": 190
+  }, {
+      "block": 2,
+      "feeRate": 180
+  }, {
+      "block": 3,
+      "feeRate": 160
+  }, {
+      "block": 4,
+      "feeRate": 155
+  }, {
+      "block": 5,
+      "feeRate": 144
+  }, {
+      "block": 6,
+      "feeRate": 130
+  }, {
+      "block": 7,
+      "feeRate": 119
+  }, {
+      "block": 8,
+      "feeRate": 108
+  }, {
+      "block": 9,
+      "feeRate": 88
+  }, {
+      "block": 10,
+      "feeRate": 69
+  }, {
+      "block": 11,
+      "feeRate": 55
+  }, {
+      "block": 12,
+      "feeRate": 48
+  }, {
+      "block": 13,
+      "feeRate": 40
+  }, {
+      "block": 14,
+      "feeRate": 33
+  }, {
+      "block": 15,
+      "feeRate": 28
+  }, {
+      "block": 16,
+      "feeRate": 19
+  }, {
+      "block": 17,
+      "feeRate": 15
+  }, {
+      "block": 18,
+      "feeRate": 3
+  }, {
+      "block": 19,
+      "feeRate": 2
+  }, {
+      "block": 20,
+      "feeRate": 1
+  }]
+`*/}
+
 const walletUtils = {
-  persistWallet,
   generateWallet,
   syncWallet,
-  getBalanceTotal,
   getAddressesBalances,
+  validateAddress,
+  generateTransaction,
+  decryptMnemonicSeed,
+  broadcastTransaction,
+  getFeeEstimates,
+  getInputAddresses,
+  decryptWallet,
 }
 
 export type {
@@ -398,6 +828,7 @@ export type {
   Addresses,
   Transaction,
   AddressBalance,
+  BlockstreamFeeEstimate as FeeEstimate,
 }
 
 export default walletUtils

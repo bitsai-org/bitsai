@@ -77,18 +77,6 @@ const GenerateWalletForm = (props: Props): JSX.Element => {
     )
   }
 
-  const handleExistingSeed = () => {
-    const credentials: Credentials = {
-      walletName: walletName,
-      password: password,
-    }
-    props.onSubmit(
-      credentials,
-      mnemonicSeedLanguage,
-      'existing'
-    )
-  }
-
   const handleMnemonicSeedLanguage = (
     event: React.ChangeEvent<{ name?: string | undefined, value: unknown }>
   ) => {
@@ -100,9 +88,9 @@ const GenerateWalletForm = (props: Props): JSX.Element => {
   useEffect(() => {
     if (
       walletName !== ''
-    && password !== ''
-    && repeatedPassword !== ''
-    && password === repeatedPassword
+      && password !== ''
+      && repeatedPassword !== ''
+      && password === repeatedPassword
     ) {
       setDisableSubmitBtns(false)
     } else {
@@ -200,16 +188,6 @@ const GenerateWalletForm = (props: Props): JSX.Element => {
         >
           Generate Seed
         </Button>
-        <Box ml="1rem">
-          <Button
-            disabled={disableSubmitBtns}
-            variant="contained"
-            size="large"
-            onClick={handleExistingSeed}
-          >
-            Existing seed
-          </Button>
-        </Box>
       </Box>
     </>
   )

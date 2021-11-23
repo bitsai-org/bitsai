@@ -11,6 +11,7 @@ const emptyWallet: Wallet = {
   transactions: [],
   xpub: '',
   hashedPassword_SHA256: '',
+  balance: 0,
 }
 
 const walletSlice = createSlice({
@@ -24,6 +25,9 @@ const walletSlice = createSlice({
     },
     setAddresses(state, actions) {
       state.wallet.addresses = actions.payload.addresses
+    },
+    setBalance(state, actions) {
+      state.wallet.balance = actions.payload.balance
     },
     setTransctions(state, actions) {
       state.wallet.transactions = actions.payload.transactions
@@ -39,6 +43,7 @@ const authSlice = createSlice({
   initialState: {
     isAuthenticated: false,
     hashedPassword: undefined,
+    walletIsSyncing: false,
   },
   reducers: {
     authenticate(state) {
@@ -46,10 +51,19 @@ const authSlice = createSlice({
     },
     deAuthenticate(state) {
       state.isAuthenticated = false
+      state.hashedPassword = undefined
+      state.walletIsSyncing = false
     },
     setHashedPassword(state, actions) {
       state.hashedPassword = actions.payload.hashedPassword
-    }
+    },
+
+    setWalletIsSyncingTrue(state) {
+      state.walletIsSyncing = true
+    },
+    setWalletIsSyncingFalse(state) {
+      state.walletIsSyncing = false
+    },
   },
 })
 

@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react'
 import CryptoJS from 'crypto-js'
 
 import auth from '../../persist/auth'
-import {Wallet} from '../../lib/walletUtils'
+import walletUtils, {Wallet} from '../../lib/walletUtils'
 
 import Box from '@material-ui/core/Box'
 import TextField from '@material-ui/core/TextField'
@@ -34,19 +34,11 @@ const Login = (props: Props): JSX.Element => {
       setIncorrectPassword(false)
   }
   const handleUnlock = () => {
-    const hashedPassword = CryptoJS.SHA256(password).toString()
-    const res = CryptoJS.AES.decrypt(
-      props.encryptedWallet,
-      hashedPassword,
-    )
-    try {
-        const wallet: Wallet = JSON.parse(
-        res.toString(CryptoJS.enc.Utf8)
-      )
-      auth.authenticate(wallet)
-    } catch {
+    const newWallet = walletUtils.decryptWallet(props.encryptedWallet, password)
+    if (newWallet !== undefined)
+      auth.authenticate(newWallet)
+    else
       setIncorrectPassword(true)
-    }
   }
 
   return(
