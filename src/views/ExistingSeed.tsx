@@ -1,5 +1,5 @@
 import {useState} from 'react'
-import styled from 'styled-components'
+import styled from '@emotion/styled'
 
 import auth from '../persist/auth'
 import walletUtils from '../lib/walletUtils'
@@ -10,9 +10,9 @@ import CryptoJS from 'crypto-js'
 import GenerateWalletForm, {Credentials} from '../components/GenerateWallet/GenerateWalletForm'
 import MnemonicInfo from '../components/GenerateWallet/MnemonicInfo'
 
-import Box from '@material-ui/core/Box'
-import Button from '@material-ui/core/Button'
-import TextField from '@material-ui/core/TextField'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import TextField from '@mui/material/TextField'
 
 
 const TextField_ = styled(TextField)`
@@ -76,7 +76,7 @@ const ExistingSeed = (): JSX.Element => {
 
               error={invalidMnemonicSeed !== undefined && invalidMnemonicSeed}
               helperText={invalidMnemonicSeed !== undefined && invalidMnemonicSeed
-                ? 'Wrong mnemonic seed format that does not conform to bip39 and was not generated fron this wallet' : ''}
+                ? 'Wrong mnemonic seed format that does not conform to BIP39 and was not generated from BitSai' : ''}
             />
             : <MnemonicInfo
               mnemonicSeed={mnemonicSeed}

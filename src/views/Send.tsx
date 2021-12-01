@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react'
 import {useSelector} from 'react-redux'
 
-import Box from '@material-ui/core/Box'
+import Box from '@mui/material/Box'
 
 import SendForm from '../components/Send/SendForm'
 import walletUtils, {Wallet, AddressBalance} from '../lib/walletUtils'

@@ -55,7 +55,6 @@ const decryptWallet = (
     encryptedWallet,
     hashedPassword_SHA256,
   )
-  console.log(res)
   try {
     const stringWallet = res.toString(CryptoJS.enc.Utf8)
     const wallet: Wallet = JSON.parse(stringWallet)
@@ -186,6 +185,7 @@ const getUtxos = async (segwitAddress: string): Promise<any> => {
     let utxos = await axios.get(
       `${BLOCKSTREAM_URL}/address/${segwitAddress}/utxo`
     )
+    console.log('address')
     return utxos.data
   } catch(err) {
     console.error(err)
@@ -282,7 +282,6 @@ const getTransactionsFromAddress = async (
     const txs: any = await axios.get(
       `${BLOCKSTREAM_URL}/address/${segwitAddress}/txs`
     )
-    console.log('get')
 
     const txsCount: number = txs.data.length
 
@@ -557,7 +556,6 @@ const getInputAddresses = (
   let inputsSats = 0
   let fee = 0
   let utxosCount = 0
-  console.log('filled', filledAddresses)
   for (const filledAddress of filledAddresses) {
 
     //deep copy
@@ -589,7 +587,6 @@ const getInputAddresses = (
     }
     inputAddresses.push(inputAddress)
   }
-  console.log('input', inputAddresses)
   return [inputAddresses, inputsSats, fee, estimatedTxSize]
 }
 
@@ -681,7 +678,6 @@ const generateTransaction = (
     value: sats,
   })
 
-  console.log(fee)
   //send rest inputsSats to an unused change address
   if (sats < inputsSats - fee) {
     const i = getFirstUnusedAddressIndex(wallet.addresses.change)

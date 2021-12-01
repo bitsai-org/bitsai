@@ -1,6 +1,6 @@
 import {Transaction} from '../../lib/walletUtils'
 
-import Box from '@material-ui/core/Box'
+import Box from '@mui/material/Box'
 
 
 interface Props {

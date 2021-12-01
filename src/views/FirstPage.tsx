@@ -3,12 +3,12 @@ import {useState, useEffect} from 'react'
 import Login from '../components/FirstPage/Login'
 
 //import theme from './../theme'
-import AddCircleIcon from '@material-ui/icons/AddCircle'
-import EcoIcon from '@material-ui/icons/Eco';
+import AddCircleIcon from '@mui/icons-material/AddCircle'
+import SpaIcon from '@mui/icons-material/Spa';
 
-import Box from '@material-ui/core/Box'
-import Button from '@material-ui/core/Button'
-import styled from 'styled-components'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import styled from '@emotion/styled'
 import {Link} from 'react-router-dom'
 
 import persistedWallet from '../persist/data'
@@ -36,7 +36,7 @@ const FirstPage = (): JSX.Element => {
         mb="4rem"
         fontSize="5rem"
       >
-        Bitcoin Wallet
+        BitSai
       </Box>
 
       {encryptedWallet &&
@@ -57,7 +57,7 @@ const FirstPage = (): JSX.Element => {
         </StyledLink>
         <Box marginLeft="2rem">
           <StyledLink to="/existing-seed">
-            <Button variant="contained" size="large" endIcon={<EcoIcon/>}>
+            <Button variant="contained" size="large" endIcon={<SpaIcon/>}>
               Existing Seed
             </Button>
           </StyledLink>

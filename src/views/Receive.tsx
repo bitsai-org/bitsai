@@ -4,15 +4,15 @@ import QRCode from 'qrcode'
 
 import CopyCpNotification from '../components/Receive/CopyCpNotification'
 
-import Box from '@material-ui/core/Box'
-import TextField from '@material-ui/core/TextField'
-import styled from 'styled-components'
+import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
+import styled from '@emotion/styled'
 
-import FileCopyIcon from '@material-ui/icons/FileCopy'
-import IconButton from '@material-ui/core/IconButton'
-import Button from '@material-ui/core/Button'
+import FileCopyIcon from '@mui/icons-material/FileCopy'
+import IconButton from '@mui/material/IconButton'
+import Button from '@mui/material/Button'
 
-import { makeStyles } from '@material-ui/core/styles'
+import makeStyles from '@mui/styles/makeStyles';
 import {Wallet, Address} from '../lib/walletUtils'
 
 const useStyles = makeStyles({
@@ -54,7 +54,6 @@ const Receive = (): JSX.Element => {
         r = randomInt(0, 19)
     setOldUnusedAddressIndex(r)
     const unusedAddress = newUnusedAddresses[r].segwitAddress
-    console.log(unusedAddress, r)
     setGeneratedAddress(unusedAddress)
     generateQR(unusedAddress)
   }
@@ -85,52 +84,50 @@ const Receive = (): JSX.Element => {
     generateAddress(newUnusedAddresses)
   }, [])
 
-  return (
-    <>
-      <Box fontSize="2rem" mb="2rem" display="flex" justifyContent="center">
-        <h2>
-          Receive satoshis
-        </h2>
-      </Box>
-      <Box display="flex" flexDirection="column" alignItems="center">
-        <img src={qrCodeUrl} alt="qrcode-img" />
-        <Box
-          mt="1rem"
-          //width="40%"
-          width="100%"
-          display="flex"
+  return <>
+    <Box fontSize="2rem" mb="2rem" display="flex" justifyContent="center">
+      <h2>
+        Receive satoshis
+      </h2>
+    </Box>
+    <Box display="flex" flexDirection="column" alignItems="center">
+      <img src={qrCodeUrl} alt="qrcode-img" />
+      <Box
+        mt="1rem"
+        //width="40%"
+        width="100%"
+        display="flex"
+      >
+        <TextField_
+          variant="outlined"
+          inputProps={{
+            readOnly: true,
+            className: classes.input,
+          }}
+          label="Address"
+          value={generatedAddress}
+          onClick={handleClickCopyCp}
         >
-          <TextField_
-            variant="outlined"
-            inputProps={{
-              readOnly: true,
-              className: classes.input,
-            }}
-            label="Address"
-            value={generatedAddress}
-            onClick={handleClickCopyCp}
-          >
-          </TextField_>
-          <IconButton onClick={handleClickCopyCp}>
-            <FileCopyIcon />
-          </IconButton>
-          <CopyCpNotification
-            open={visibleNotification}
-            onClose={(open)=>{handleCloseNotification(open)}}
-          />
-        </Box>
-        <Box mt="1rem">
-          <Button
-            variant="contained"
-            size="large"
-            onClick={() => {generateAddress(unusedAddresses)}}
-          >
-            GENERATE
-          </Button>
-        </Box>
+        </TextField_>
+        <IconButton onClick={handleClickCopyCp} size="large">
+          <FileCopyIcon />
+        </IconButton>
+        <CopyCpNotification
+          open={visibleNotification}
+          onClose={(open)=>{handleCloseNotification(open)}}
+        />
       </Box>
-    </>
-  )
+      <Box mt="1rem">
+        <Button
+          variant="contained"
+          size="large"
+          onClick={() => {generateAddress(unusedAddresses)}}
+        >
+          GENERATE
+        </Button>
+      </Box>
+    </Box>
+  </>;
 }
 
 const getUnusedAddresses = (addresses: Array<Address>): Array<Address> => {

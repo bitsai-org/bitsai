@@ -1,5 +1,5 @@
-import Box from '@material-ui/core/Box'
-import EcoIcon from '@material-ui/icons/Eco';
+import Box from '@mui/material/Box'
+import SpaIcon from '@mui/icons-material/Spa';
 
 interface Props {
   mnemonicSeed: string,
@@ -14,13 +14,13 @@ const MnemonicInfo = (props: Props): JSX.Element => {
         display="flex"
         alignItems="center"
       >
-        <EcoIcon/>
+        <SpaIcon/>
         <i>Recovery Seed phrase</i>
       </Box>
       <Box>
         <Box
           border={2}
-          borderRadius={8}
+          borderRadius="8px"
           //borderColor="#ebc19c"
           p="1rem"
         >
@@ -60,7 +60,7 @@ const MnemonicInfo = (props: Props): JSX.Element => {
         </Box>
       </Box>
     </Box>
-  )
+  );
 }
 
 export default MnemonicInfo;

@@ -1,14 +1,15 @@
 import React, {useState, useEffect} from 'react'
 import { passwordStrength } from 'check-password-strength'
 
-import styled from 'styled-components'
+//import styled from '@emotion/styled'
+import styled from '@emotion/styled'
 
-import Box from '@material-ui/core/Box'
-import TextField from '@material-ui/core/TextField'
-import Button from '@material-ui/core/Button'
-import Select from '@material-ui/core/Select'
-import MenuItem from '@material-ui/core/MenuItem'
-import InputLabel from '@material-ui/core/InputLabel'
+import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
+import Select, { SelectChangeEvent } from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
+import InputLabel from '@mui/material/InputLabel'
 
 const TextField_ = styled(TextField)`
   background-color: white;
@@ -78,7 +79,7 @@ const GenerateWalletForm = (props: Props): JSX.Element => {
   }
 
   const handleMnemonicSeedLanguage = (
-    event: React.ChangeEvent<{ name?: string | undefined, value: unknown }>
+    event: SelectChangeEvent
   ) => {
     const newLanguage = event.target.value
     if (typeof newLanguage === 'string')
@@ -138,7 +139,7 @@ const GenerateWalletForm = (props: Props): JSX.Element => {
         <InputLabel_ shrink>
           Mnemonic seed language
         </InputLabel_>
-        <Select_
+        <Select
           labelId="demo-simple-select-placeholder-label-label"
           id="demo-simple-select-placeholder-label"
           label="Mnemonic language"
@@ -176,7 +177,7 @@ const GenerateWalletForm = (props: Props): JSX.Element => {
           <MenuItem value="chinese_traditional">
             Traditional Chinese
           </MenuItem>
-        </Select_>
+        </Select>
       </Box>
 
       <Box mt="2rem" display="flex" justifyContent="center">

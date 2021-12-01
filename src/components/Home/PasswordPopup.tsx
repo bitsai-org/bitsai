@@ -1,13 +1,13 @@
 import {useState, useEffect} from 'react';
 import {useSelector} from 'react-redux'
-import styled from 'styled-components'
+import styled from '@emotion/styled'
 
-import Modal from '@material-ui/core/Modal';
-import Backdrop from '@material-ui/core/Backdrop';
-import Fade from '@material-ui/core/Fade';
-import Button from '@material-ui/core/Button'
-import Box from '@material-ui/core/Box'
-import TextField from '@material-ui/core/TextField'
+import Modal from '@mui/material/Modal';
+import Backdrop from '@mui/material/Backdrop';
+import Fade from '@mui/material/Fade';
+import Button from '@mui/material/Button'
+import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
 
 import walletUtils from '../../lib/walletUtils'
 
@@ -16,6 +16,16 @@ const TextField_ = styled(TextField)`
   background-color: white;
   width: 20rem;
 `
+
+const modalStyle = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  boxShadow: 24,
+  p: 4,
+};
 
 interface Props {
   onSubmit: (mnemonicSeed: string) => void,
@@ -65,20 +75,21 @@ const PasswordPopup = (props: Props) => {
         display="flex"
         justifyContent="center"
         alignItems="center"
-        clone
+        //clone
       >
         <Modal
           open={props.open}
           onClose={handleClose}
           //className={classes.modal}
           closeAfterTransition
-          BackdropComponent={Backdrop}
-          BackdropProps={{
-            timeout: 500,
-          }}
+          //BackdropComponent={Backdrop}
+          //BackdropProps={{
+            //timeout: 500,
+          //}}
         >
           <Fade in={props.open}>
             <Box
+              sx={modalStyle}
               bgcolor="#a35c20"
               border={2}
               p="0.5rem"

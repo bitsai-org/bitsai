@@ -4,12 +4,12 @@ import CryptoJS from 'crypto-js'
 import auth from '../../persist/auth'
 import walletUtils, {Wallet} from '../../lib/walletUtils'
 
-import Box from '@material-ui/core/Box'
-import TextField from '@material-ui/core/TextField'
-import Button from '@material-ui/core/Button'
-import LockOpenIcon from '@material-ui/icons/LockOpen';
+import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 
-import styled from 'styled-components'
+import styled from '@emotion/styled'
 
 
 const TextField_ = styled(TextField)`

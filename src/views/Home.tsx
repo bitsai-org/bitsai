@@ -4,9 +4,9 @@ import {walletActions} from '../store/store'
 import walletUtils, {Wallet} from '../lib/walletUtils'
 
 //import theme from './../theme'
-import Box from '@material-ui/core/Box'
-import Button from '@material-ui/core/Button'
-import styled from 'styled-components'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import styled from '@emotion/styled'
 import {Link} from 'react-router-dom'
 
 //import PasswordPopup from '../components/Home/PasswordPopup'

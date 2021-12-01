@@ -1,11 +1,11 @@
 import {useState} from 'react';
-import styled from 'styled-components'
+import styled from '@emotion/styled'
 
-import Box from '@material-ui/core/Box'
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Slider from '@material-ui/core/Slider';
-import Input from '@material-ui/core/Input';
+import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Slider from '@mui/material/Slider';
+import Input from '@mui/material/Input';
 
 const Input_ = styled(Input)`
   color: #ebc19c;

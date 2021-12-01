@@ -1,16 +1,17 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
-import Snackbar from '@material-ui/core/Snackbar';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
+import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
-import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
 
-const Alert = (props: AlertProps): JSX.Element => {
-  return (
-    <MuiAlert elevation={6} variant="filled" {...props} />
-  )
-}
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>((
+  props,
+  ref,
+) => {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+})
 
 interface Props {
   open: boolean,
@@ -19,12 +20,14 @@ interface Props {
 
 const CopyCpNotification = (props: Props): JSX.Element => {
 
+  const [x, setX] = React.useState(false)
+
   const handleClose = (
-    event: React.SyntheticEvent | React.MouseEvent,
+    event: React.SyntheticEvent | Event,
     reason?: string
   ) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
 
     props.onClose(false)
@@ -46,26 +49,6 @@ const CopyCpNotification = (props: Props): JSX.Element => {
           Address copied to clipboard
         </Alert>
       </Snackbar>
-      {/*<Snackbar
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        open={props.open}
-        autoHideDuration={1000}
-        onClose={handleClose}
-        message="Note archived"
-        action={
-          <>
-            <Button color="secondary" size="small" onClick={handleClose}>
-              UNDO
-            </Button>
-            <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose}>
-              <CloseIcon fontSize="small" />
-            </IconButton>
-          </>
-        }
-      />*/}
     </>
   )
 }

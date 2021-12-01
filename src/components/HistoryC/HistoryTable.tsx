@@ -3,7 +3,7 @@ import {useSelector} from 'react-redux'
 
 import {Transaction, Wallet} from '../../lib/walletUtils'
 
-import Box from '@material-ui/core/Box'
+import Box from '@mui/material/Box'
 import HistoryTableRow from '../../components/HistoryC/HistoryTableRow'
 
 const HistoryTable = (): JSX.Element => {

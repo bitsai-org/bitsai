@@ -9,8 +9,8 @@ import CryptoJS from 'crypto-js'
 import GenerateWalletForm, {Credentials} from '../components/GenerateWallet/GenerateWalletForm'
 import MnemonicInfo from '../components/GenerateWallet/MnemonicInfo'
 
-import Box from '@material-ui/core/Box'
-import Button from '@material-ui/core/Button'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 
 
 const GenerateWallet = (): JSX.Element => {

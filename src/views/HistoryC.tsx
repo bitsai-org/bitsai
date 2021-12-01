@@ -3,7 +3,7 @@ import React from 'react'
 import MuiHistoryTable from '../components/HistoryC/MuiHistoryTable'
 import HistoryTable from '../components/HistoryC/HistoryTable'
 
-import Box from '@material-ui/core/Box'
+import Box from '@mui/material/Box'
 
 const HistoryC = (): JSX.Element => {
 
