@@ -13,7 +13,7 @@ import walletUtils from '../../lib/walletUtils'
 
 
 const TextField_ = styled(TextField)`
-  background-color: white;
+  //background-color: white;
   width: 20rem;
 `
 
@@ -90,7 +90,7 @@ const PasswordPopup = (props: Props) => {
           <Fade in={props.open}>
             <Box
               sx={modalStyle}
-              bgcolor="#a35c20"
+              //bgcolor="#a35c20"
               border={2}
               p="0.5rem"
               display="flex"

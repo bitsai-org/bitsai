@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react'
 import {useSelector} from 'react-redux'
+import theme from '../../theme'
 
 import styled from '@emotion/styled'
 
@@ -18,7 +19,7 @@ import PasswordPopup from '../Home/PasswordPopup'
 import walletUtils, {AddressBalance, Wallet, FeeEstimate} from '../../lib/walletUtils'
 
 const TextField_ = styled(TextField)`
-  background-color: white;
+  //background-color: white;
   width: 100%;
 `
 
@@ -254,6 +255,7 @@ const Send = (props: Props): JSX.Element => {
           />
           <Box
             component="h3"
+            color={theme.palette.primary.main}
           >
             {automaticFeeRate
               ? 'Automatic fee rate'
@@ -274,7 +276,7 @@ const Send = (props: Props): JSX.Element => {
             />
         }
         {insufficientFunds
-          ? <Box color="#d50000">
+          ? <Box color={theme.palette.error.main}>
               Can't afford this fee!
             </Box>
           : <Box component="p">
@@ -289,7 +291,9 @@ const Send = (props: Props): JSX.Element => {
           addressesBalances={props.addressesBalances}
         />
       </Box>*/}
-      <Box mt="2rem">
+      <Box 
+        mt="2rem"
+      >
         <Summary
           sats={sats}
           feeRate={feeRate}

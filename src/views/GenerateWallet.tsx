@@ -1,4 +1,5 @@
 import {useState} from 'react'
+import theme from '../theme'
 
 import auth from '../persist/auth'
 import walletUtils from '../lib/walletUtils'
@@ -41,7 +42,13 @@ const GenerateWallet = (): JSX.Element => {
 
   return (
     <>
-      <Box fontSize="2rem" mb="2rem" display="flex" justifyContent="center">
+      <Box 
+        fontSize="2rem"
+        mb="2rem"
+        display="flex"
+        justifyContent="center"
+        color={theme.palette.primary.main}
+      >
         <h2>
           Generate Wallet
         </h2>
@@ -52,8 +59,14 @@ const GenerateWallet = (): JSX.Element => {
           display="flex"
           justifyContent="center"
           flexDirection="column"
-          //width="50%"
-          width="80%"
+          sx={{
+            width: {
+              xs: '80%',
+              sm: '60%',
+              md: '40%',
+              lg: '30%',
+            }
+          }}
         >
 
           {!mnemonicSeed &&

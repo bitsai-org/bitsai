@@ -1,4 +1,6 @@
 import Box from '@mui/material/Box'
+import theme from '../../theme'
+
 
 interface Props {
   sats: number,
@@ -10,7 +12,12 @@ const Summary = (props: Props): JSX.Element => {
 
   return(
     <>
-      <h3>Summary</h3>
+      <Box
+        component="h3"
+        color={theme.palette.primary.main}
+      >
+        Summary
+      </Box>
       <Box mt="0.4rem" ml="1rem" display="flex">
         <Box>
           <Box>ToSend</Box>

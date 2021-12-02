@@ -1,18 +1,19 @@
 import React, {useState, useEffect} from 'react'
-import {useSelector, useDispatch} from 'react-redux'
+import { useSelector } from 'react-redux'
 import QRCode from 'qrcode'
+import theme from '../theme'
 
 import CopyCpNotification from '../components/Receive/CopyCpNotification'
 
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import styled from '@emotion/styled'
+import makeStyles from '@mui/styles/makeStyles';
 
 import FileCopyIcon from '@mui/icons-material/FileCopy'
 import IconButton from '@mui/material/IconButton'
 import Button from '@mui/material/Button'
 
-import makeStyles from '@mui/styles/makeStyles';
 import {Wallet, Address} from '../lib/walletUtils'
 
 const useStyles = makeStyles({
@@ -23,7 +24,7 @@ const useStyles = makeStyles({
 
 const TextField_ = styled(TextField)`
   width: 100%;
-  margin-left: 2rem;
+  //margin-left: 2rem;
 `
 
 const Receive = (): JSX.Element => {
@@ -65,7 +66,13 @@ const Receive = (): JSX.Element => {
   const generateQR = async (segwitAddress: string) => {
     try {
       const paymentURI = `bitcoin:${segwitAddress}`
-      const url = await QRCode.toDataURL(paymentURI)
+
+      const opts = {
+        rendererOpts: {
+          quality: 1,
+        }
+      }
+      const url = await QRCode.toDataURL(paymentURI, opts)
       setQrCodeUrl(url)
     } catch (err) {
       console.error(err)
@@ -84,50 +91,73 @@ const Receive = (): JSX.Element => {
     generateAddress(newUnusedAddresses)
   }, [])
 
-  return <>
-    <Box fontSize="2rem" mb="2rem" display="flex" justifyContent="center">
-      <h2>
-        Receive satoshis
-      </h2>
-    </Box>
-    <Box display="flex" flexDirection="column" alignItems="center">
-      <img src={qrCodeUrl} alt="qrcode-img" />
-      <Box
-        mt="1rem"
-        //width="40%"
-        width="100%"
-        display="flex"
+  return (
+    <>
+      <Box 
+        fontSize="2rem" 
+        mb="2rem" 
+        display="flex" 
+        justifyContent="center"
+        color={theme.palette.primary.main}
       >
-        <TextField_
-          variant="outlined"
-          inputProps={{
-            readOnly: true,
-            className: classes.input,
+        <h2>
+          Receive satoshis
+        </h2>
+      </Box>
+      <Box display="flex" flexDirection="column" alignItems="center">
+        <Box
+          justifySelf="center"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          flexDirection="column"
+          sx={{
+            width: {
+              xs: '80%',
+              sm: '60%',
+              md: '40%',
+              lg: '30%',
+            }
           }}
-          label="Address"
-          value={generatedAddress}
-          onClick={handleClickCopyCp}
         >
-        </TextField_>
-        <IconButton onClick={handleClickCopyCp} size="large">
-          <FileCopyIcon />
-        </IconButton>
-        <CopyCpNotification
-          open={visibleNotification}
-          onClose={(open)=>{handleCloseNotification(open)}}
-        />
+          <Box
+            component="img"
+            src={qrCodeUrl} 
+            alt="qrcode-img"
+          />
+          <TextField_
+            variant="filled"
+            inputProps={{
+              readOnly: true,
+              className: classes.input,
+            }}
+            label="Address"
+            value={generatedAddress}
+            onClick={handleClickCopyCp}
+            sx={{
+              width: '100%',
+              marginTop: '1rem',
+            }}
+          />
+          <CopyCpNotification
+            open={visibleNotification}
+            onClose={(open)=>{handleCloseNotification(open)}}
+          />
+          <Box 
+            mt="1rem"
+          >
+            <Button
+              variant="contained"
+              size="large"
+              onClick={() => {generateAddress(unusedAddresses)}}
+            >
+              GENERATE
+            </Button>
+          </Box>
+        </Box>
       </Box>
-      <Box mt="1rem">
-        <Button
-          variant="contained"
-          size="large"
-          onClick={() => {generateAddress(unusedAddresses)}}
-        >
-          GENERATE
-        </Button>
-      </Box>
-    </Box>
-  </>;
+    </>
+  )
 }
 
 const getUnusedAddresses = (addresses: Array<Address>): Array<Address> => {

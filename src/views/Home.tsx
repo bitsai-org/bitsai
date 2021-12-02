@@ -1,7 +1,6 @@
-import {useState, useEffect} from 'react'
-import {useSelector, useDispatch} from 'react-redux'
-import {walletActions} from '../store/store'
-import walletUtils, {Wallet} from '../lib/walletUtils'
+import { useSelector } from 'react-redux'
+import { Wallet } from '../lib/walletUtils'
+import theme from '../theme'
 
 //import theme from './../theme'
 import Box from '@mui/material/Box'
@@ -28,9 +27,32 @@ const Home = (): JSX.Element => {
         marginTop="20vh"
         fontSize="5rem"
       >
-        <HistoryLink to="/history">
-          <p>{wallet.balance} Sats</p>
-        </HistoryLink>
+        <Box
+          display="flex"
+          alignItems="end"
+        >
+          <HistoryLink
+            to="/history"
+            style={{
+              color: theme.palette.primary.main,
+            }}
+          >
+            <Box
+              component="p"
+            >
+              {wallet.balance}
+            </Box>
+          </HistoryLink>
+          <Box
+            ml="0.3rem"
+            mb="1.5rem"
+            fontSize="2rem"
+            display="flex"
+            component="p"
+          >
+            Sats
+          </Box>
+        </Box>
       </Box>
       <Box
         marginTop="15vh"

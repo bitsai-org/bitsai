@@ -1,6 +1,7 @@
 import { HashRouter as Router, Switch, Route, Link, Redirect} from "react-router-dom"
 import {useEffect} from 'react'
 import {useSelector} from 'react-redux'
+import theme from './theme'
 
 import styled from '@emotion/styled'
 
@@ -63,11 +64,15 @@ const NotLogedInRoutes = (): JSX.Element => {
         <FirstPage />
       </Route>
       <Route exact path="/generate-wallet">
-        <StyledLink to="/"><IconButton size="large"><ArrowBackIcon/></IconButton></StyledLink>
+        <StyledLink to="/">
+          <IconButton size="large"><ArrowBackIcon color="primary"/></IconButton>
+        </StyledLink>
         <GenerateWallet />
       </Route>
       <Route exact path="/existing-seed">
-        <StyledLink to="/"><IconButton size="large"><ArrowBackIcon/></IconButton></StyledLink>
+        <StyledLink to="/">
+          <IconButton size="large"><ArrowBackIcon color="primary"/></IconButton>
+        </StyledLink>
         <ExistingSeed/>
       </Route>
       <Redirect to="/"/>
@@ -95,24 +100,30 @@ const LoggedInRoutes = (): JSX.Element => {
       <Route exact path="/">
         <Box textAlign="end">
           <IconButton onClick={handleRefresh} size="large">
-            <RefreshIcon/>
+            <RefreshIcon color="primary"/>
           </IconButton>
           <IconButton onClick={handleLockWallet} size="large">
-            <LockIcon/>
+            <LockIcon color="primary"/>
           </IconButton>
         </Box>
         <Home />
       </Route>
       <Route exact path="/send">
-        <StyledLink to="/"><IconButton size="large"><ArrowBackIcon/></IconButton></StyledLink>
+        <StyledLink to="/">
+          <IconButton color="primary" size="large"><ArrowBackIcon/></IconButton>
+        </StyledLink>
         <Send/>
       </Route>
       <Route exact path="/receive">
-        <StyledLink to="/"><IconButton size="large"><ArrowBackIcon/></IconButton></StyledLink>
+        <StyledLink to="/">
+          <IconButton color="primary" size="large"><ArrowBackIcon/></IconButton>
+        </StyledLink>
         <Receive/>
       </Route>
       <Route exact path="/history">
-        <StyledLink to="/"><IconButton size="large"><ArrowBackIcon/></IconButton></StyledLink>
+        <StyledLink to="/">
+          <IconButton color="primary" size="large"><ArrowBackIcon/></IconButton>
+        </StyledLink>
         <HistoryC/>
       </Route>
       <Redirect to="/"/>

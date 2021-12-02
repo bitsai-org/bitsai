@@ -1,4 +1,5 @@
 import {useState, useEffect} from 'react'
+import theme from '../theme'
 
 import Login from '../components/FirstPage/Login'
 
@@ -24,43 +25,64 @@ const FirstPage = (): JSX.Element => {
   }, [])
 
   return (
-    <Box
-      display="flex"
-      //justifyContent="center"
-      alignItems="center"
-      height="80vh"
-      flexDirection="column"
-    >
+    <Box display="flex" flexDirection="column" alignItems="center">
       <Box
-        mt="20vh"
+        mt="10vh"
         mb="4rem"
         fontSize="5rem"
+        color={theme.palette.primary.main}
+        sx={{
+          marginTop: {
+            xs: '10vh',
+            //sm: '60%',
+            md: '20vh',
+            //lg: '30%',
+          }
+        }}
       >
         BitSai
       </Box>
 
-      {encryptedWallet &&
-      <Login
-        walletName="ado-btc"
-        encryptedWallet={encryptedWallet}
-      />
-      }
-
       <Box
-        mt="2rem"
+        justifySelf="center"
         display="flex"
+        justifyContent="center"
+        flexDirection="column"
+        sx={{
+          width: {
+            xs: '80%',
+            sm: '60%',
+            md: '40%',
+            lg: '30%',
+          }
+        }}
       >
-        <StyledLink to="/generate-wallet">
-          <Button variant="contained" size="large" endIcon={<AddCircleIcon/>}>
-            Create Wallet
-          </Button>
-        </StyledLink>
-        <Box marginLeft="2rem">
-          <StyledLink to="/existing-seed">
-            <Button variant="contained" size="large" endIcon={<SpaIcon/>}>
-              Existing Seed
+        {encryptedWallet &&
+        <Login
+          walletName="ado-btc"
+          encryptedWallet={encryptedWallet}
+        />
+        }
+        
+        <Box
+          mt="2rem"
+          display="flex"
+          justifyContent="center"
+        >
+          <StyledLink to="/generate-wallet">
+            <Button variant="contained" size="large" endIcon={<AddCircleIcon/>}>
+              Create Wallet
             </Button>
           </StyledLink>
+          <StyledLink to="/existing-seed"
+            style={{
+              marginLeft: '2rem',
+            }}
+          >
+              <Button variant="contained" size="large" endIcon={<SpaIcon/>}>
+                Existing Seed
+              </Button>
+            </StyledLink>
         </Box>
       </Box>
 

@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import SpaIcon from '@mui/icons-material/Spa';
+import theme from '../../theme'
 
 interface Props {
   mnemonicSeed: string,
@@ -24,9 +25,12 @@ const MnemonicInfo = (props: Props): JSX.Element => {
           //borderColor="#ebc19c"
           p="1rem"
         >
-          <h2>
+          <Box 
+            component="h2"
+            color={theme.palette.success.main}
+          >
             {props.mnemonicSeed}
-          </h2>
+          </Box>
         </Box>
       </Box>
       <Box

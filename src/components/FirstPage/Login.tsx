@@ -11,15 +11,6 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 
 import styled from '@emotion/styled'
 
-
-const TextField_ = styled(TextField)`
-  background-color: white;
-  width: 20rem;
-`
-const Button_ = styled(Button)`
-  margin-top: 0.2rem;
-`
-
 interface Props {
   walletName: string,
   encryptedWallet: string,
@@ -55,7 +46,7 @@ const Login = (props: Props): JSX.Element => {
         >
           Welcome Back!
         </Box>
-        <TextField_
+        <TextField
           label="Password"
           variant="filled"
           type="password"
@@ -63,19 +54,26 @@ const Login = (props: Props): JSX.Element => {
           onChange={handlePassword}
           helperText={incorrectPassword ? 'Incorrect password.' : ''}
           error={incorrectPassword}
+          style={{
+            width: '100%'
+          }}
         />
-        <Button_
+        <Button
           variant="contained"
           size="large"
           endIcon={<LockOpenIcon/>}
           onClick={handleUnlock}
+          style={{
+            marginTop: '0.2rem',
+          }}
         >
           Unlock
-        </Button_>
+        </Button>
       </Box>
       <Box
         component="h2"
         mt="2rem"
+        textAlign="center"
       >
         Or ...
       </Box>

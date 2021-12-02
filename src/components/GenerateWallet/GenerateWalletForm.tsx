@@ -12,7 +12,8 @@ import MenuItem from '@mui/material/MenuItem'
 import InputLabel from '@mui/material/InputLabel'
 
 const TextField_ = styled(TextField)`
-  background-color: white;
+  //background-color: white;
+  //background-color: #ebdbb2;
   width: 100%;
 `
 
@@ -21,9 +22,6 @@ const Select_ = styled(Select)`
   height: 3rem;
   width: 13rem;
   padding-left: 0.7rem;
-`
-const InputLabel_ = styled(InputLabel)`
-  color: #ebc19c;
 `
 
 interface Credentials {
@@ -136,9 +134,9 @@ const GenerateWalletForm = (props: Props): JSX.Element => {
 
 
       <Box mt="1rem">
-        <InputLabel_ shrink>
+        <InputLabel>
           Mnemonic seed language
-        </InputLabel_>
+        </InputLabel>
         <Select
           labelId="demo-simple-select-placeholder-label-label"
           id="demo-simple-select-placeholder-label"

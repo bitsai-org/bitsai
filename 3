@@ -40,12 +40,13 @@ const Send = (): JSX.Element => {
           display="flex"
           justifyContent="center"
           flexDirection="column"
+          width="80%"
           sx={{
-            width: {
-              xs: '80%',
-              sm: '60%',
-              md: '40%',
-              lg: '30%',
+            '@media (min-width: 600px)': {
+              width: '40%'
+            },
+            '@media (min-width: 900px)': {
+              width: '40%'
             }
           }}
         >

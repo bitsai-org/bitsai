@@ -1,5 +1,6 @@
 import {useState} from 'react'
 import styled from '@emotion/styled'
+import theme from '../theme'
 
 import auth from '../persist/auth'
 import walletUtils from '../lib/walletUtils'
@@ -16,7 +17,7 @@ import TextField from '@mui/material/TextField'
 
 
 const TextField_ = styled(TextField)`
-  background-color: white;
+  //background-color: white;
   width: 100%;
 `
 
@@ -48,7 +49,13 @@ const ExistingSeed = (): JSX.Element => {
 
   return (
     <>
-      <Box fontSize="2rem" mb="2rem" display="flex" justifyContent="center">
+      <Box 
+        fontSize="2rem"
+        mb="2rem"
+        display="flex"
+        justifyContent="center"
+        color={theme.palette.primary.main}
+      >
         <h2>
           Existing Seed
         </h2>
@@ -60,8 +67,14 @@ const ExistingSeed = (): JSX.Element => {
           justifyContent="center"
           flexDirection="column"
           alignItems="center"
-          //width="50%"
-          width="80%"
+          sx={{
+            width: {
+              xs: '80%',
+              sm: '60%',
+              md: '40%',
+              lg: '30%',
+            }
+          }}
         >
 
           {mnemonicSeed === undefined
