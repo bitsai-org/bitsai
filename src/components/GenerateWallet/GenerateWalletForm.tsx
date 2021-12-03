@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react'
 import { passwordStrength } from 'check-password-strength'
 
+import CredentialsInputs, {CredentialsInputsType} from '../CredentialsInputs'
+
 //import styled from '@emotion/styled'
 import styled from '@emotion/styled'
 
@@ -10,6 +12,7 @@ import Button from '@mui/material/Button'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import InputLabel from '@mui/material/InputLabel'
+import FormControl from '@mui/material/FormControl';
 
 const TextField_ = styled(TextField)`
   //background-color: white;
@@ -38,39 +41,22 @@ interface Props {
 }
 
 const GenerateWalletForm = (props: Props): JSX.Element => {
-  const [walletName, setWalletName] = useState('')
-  const [password, setPassword] = useState('')
-  const [repeatedPassword, setRepeatedPassword] = useState('')
-  const [incorrectPassword, setIncorrectPassword] = useState(false)
+
+  const [credentials, setCredentials] = useState<CredentialsInputsType>({
+    walletName: '',
+    password: '',
+    ok: false,
+  })
+
   const [mnemonicSeedLanguage, setMnemonicSeedLanguage] = useState('english')
 
-  const [passwordStrengthValue, setPasswordStrengthValue] = useState('')
-
-  const [disableSubmitBtns, setDisableSubmitBtns] = useState(true)
-
-  const handleWalletName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setWalletName(event.target.value)
-  }
-  const handlePassword  = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newPassword = event.target.value
-    setPassword(newPassword)
-    setPasswordStrengthValue(passwordStrength(newPassword).value)
-  }
-  const handleRepeatedPassword = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newRepeatedPassword = event.target.value
-    setRepeatedPassword(newRepeatedPassword)
-    if (! password.startsWith(newRepeatedPassword))
-      setIncorrectPassword(true)
-    else
-      setIncorrectPassword(false)
-  }
   const handleGenerateSeed = () => {
-    const credentials: Credentials = {
-      walletName: walletName,
-      password: password,
+    const credentialsToSubmit: Credentials = {
+      walletName: credentials.walletName,
+      password: credentials.password,
     }
     props.onSubmit(
-      credentials,
+      credentialsToSubmit,
       mnemonicSeedLanguage,
       'generate',
     )
@@ -84,66 +70,29 @@ const GenerateWalletForm = (props: Props): JSX.Element => {
       setMnemonicSeedLanguage(newLanguage)
   }
 
-  useEffect(() => {
-    if (
-      walletName !== ''
-      && password !== ''
-      && repeatedPassword !== ''
-      && password === repeatedPassword
-    ) {
-      setDisableSubmitBtns(false)
-    } else {
-      setDisableSubmitBtns(true)
-    }
-  }, [walletName, password, repeatedPassword])
+  const handleCredentials = (newCredentials: CredentialsInputsType) => {
+    setCredentials(newCredentials)
+  }
 
   return (
     <>
-      <Box>
-        <TextField_
-          label="Wallet name"
-          variant="filled"
-          value={walletName}
-          onChange={handleWalletName}
-        />
-      </Box>
-      <Box mt="1rem">
-        <TextField_
-          label="Password"
-          variant="filled"
-          type="password"
-          value={password}
-          onChange={handlePassword}
-        />
-        <Box component="p">
-          {passwordStrengthValue}
-        </Box>
-      </Box>
-      <Box mt="1rem">
-        <TextField_
-          label="Repeat password"
-          variant="filled"
-          type="password"
-          value={repeatedPassword}
-          onChange={handleRepeatedPassword}
-
-          helperText={incorrectPassword ? 'Incorrect entry.' : ''}
-          error={incorrectPassword}
-        />
-      </Box>
-
+      <CredentialsInputs
+        onChange={(credentials)=>{handleCredentials(credentials)}}
+      />
 
       <Box mt="1rem">
         <InputLabel>
           Mnemonic seed language
         </InputLabel>
         <Select
-          labelId="demo-simple-select-placeholder-label-label"
-          id="demo-simple-select-placeholder-label"
+          id="mnemonic-select-id"
           label="Mnemonic language"
           value={mnemonicSeedLanguage}
           onChange={handleMnemonicSeedLanguage}
           displayEmpty
+          sx={{
+            width: '50%'
+          }}
         >
           <MenuItem value="english">
             English
@@ -180,7 +129,7 @@ const GenerateWalletForm = (props: Props): JSX.Element => {
 
       <Box mt="2rem" display="flex" justifyContent="center">
         <Button
-          disabled={disableSubmitBtns}
+          disabled={!credentials.ok}
           variant="contained"
           size="large"
           onClick={handleGenerateSeed}

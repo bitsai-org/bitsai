@@ -1,4 +1,5 @@
 import {useState, useEffect} from 'react'
+import {Link} from 'react-router-dom'
 import theme from '../theme'
 
 import Login from '../components/FirstPage/Login'
@@ -10,7 +11,6 @@ import SpaIcon from '@mui/icons-material/Spa';
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import styled from '@emotion/styled'
-import {Link} from 'react-router-dom'
 
 import persistedWallet from '../persist/data'
 
@@ -63,7 +63,7 @@ const FirstPage = (): JSX.Element => {
           encryptedWallet={encryptedWallet}
         />
         }
-        
+
         <Box
           mt="2rem"
           display="flex"
