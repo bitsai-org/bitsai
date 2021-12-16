@@ -10,8 +10,8 @@ import {Credentials} from '../components/GenerateWallet/GenerateWalletForm'
 import notification from './notification'
 
 const bip32 = bitcoin.bip32
-const NETWORK = bitcoin.networks.regtest
-const BLOCKSTREAM_URL = 'http://localhost:3000'
+const NETWORK = bitcoin.networks.bitcoin
+const BLOCKSTREAM_URL = 'https://blockstream.info/api'
 const GAP_LIMIT = 20
 const DERIVATION_PATH = 'm/84\'/0\'/0\''
 
