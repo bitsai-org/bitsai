@@ -97,7 +97,7 @@ const OptionsMenu = (): JSX.Element => {
             component="p"
             pt="0.25rem"
           >
-            Refresh
+            Resync
           </Box>
         </MenuItem>
 
