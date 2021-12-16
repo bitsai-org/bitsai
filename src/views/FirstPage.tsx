@@ -81,7 +81,7 @@ const FirstPage = (): JSX.Element => {
             &nbsp;(testnet)
           </Box>
         </Box>
-        
+
       </Box>
 
       <Box

@@ -13,7 +13,7 @@ const bip32 = bitcoin.bip32
 const NETWORK = bitcoin.networks.testnet
 const BLOCKSTREAM_URL = 'https://blockstream.info/testnet/api'
 const GAP_LIMIT = 20
-const DERIVATION_PATH = 'm/84\'/0\'/0\''
+const DERIVATION_PATH = 'm/84\'/1\'/0\''
 
 interface Address {
   segwitAddress: string,
