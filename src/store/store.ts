@@ -1,5 +1,5 @@
 import { createSlice, configureStore } from '@reduxjs/toolkit'
-import {Addresses, Wallet} from '../lib/walletUtils'
+import { Wallet } from '../lib/walletUtils'
 
 const emptyWallet: Wallet = {
   name: '',
@@ -11,7 +11,7 @@ const emptyWallet: Wallet = {
   transactions: [],
   xpub: '',
   hashedPassword_SHA256: '',
-  balance: 0,
+  balance: {confirmed: 0, unconfirmed: 0},
 }
 
 const walletSlice = createSlice({
@@ -38,13 +38,27 @@ const walletSlice = createSlice({
   },
 })
 
+interface AuthSliceTypes {
+  isAuthenticated: boolean,
+  hashedPassword: string | undefined,
+  walletIsSyncing: boolean,
+  errorStack: Array<string>,
+  infoMsg: string | undefined,
+  warningMsg: string | undefined,
+}
+
+const authSliceInitialState: AuthSliceTypes = {
+  isAuthenticated: false,
+  hashedPassword: undefined,
+  walletIsSyncing: false,
+  errorStack: [],
+  infoMsg: undefined,
+  warningMsg: undefined,
+}
+
 const authSlice = createSlice({
   name: 'auth',
-  initialState: {
-    isAuthenticated: false,
-    hashedPassword: undefined,
-    walletIsSyncing: false,
-  },
+  initialState: authSliceInitialState,
   reducers: {
     authenticate(state) {
       state.isAuthenticated = true
@@ -63,6 +77,26 @@ const authSlice = createSlice({
     },
     setWalletIsSyncingFalse(state) {
       state.walletIsSyncing = false
+    },
+
+    pushToErrorStack(state, actions) {
+      state.errorStack.push(actions.payload.msg)
+    },
+    cleanErrorStack(state) {
+      state.errorStack = []
+    },
+
+    setInfoMsg(state, actions) {
+      state.infoMsg = actions.payload.msg
+    },
+    clearInfoMsg(state) {
+      state.infoMsg = undefined
+    },
+    setWarningMsg(state, actions) {
+      state.warningMsg = actions.payload.msg
+    },
+    clearWarningMsg(state) {
+      state.warningMsg = undefined
     },
   },
 })

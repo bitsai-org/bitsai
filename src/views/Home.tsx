@@ -1,3 +1,4 @@
+import React from 'react'
 import { useSelector } from 'react-redux'
 import { Wallet } from '../lib/walletUtils'
 import theme from '../theme'
@@ -9,7 +10,6 @@ import Button from '@mui/material/Button'
 import styled from '@emotion/styled'
 import {Link} from 'react-router-dom'
 
-//import PasswordPopup from '../components/Home/PasswordPopup'
 
 const Home = (): JSX.Element => {
   const wallet: Wallet = useSelector((state: any) => {
@@ -26,7 +26,6 @@ const Home = (): JSX.Element => {
     >
       <Box
         marginTop="20vh"
-        fontSize="5rem"
       >
         <Box
           display="flex"
@@ -38,23 +37,56 @@ const Home = (): JSX.Element => {
               color: theme.palette.primary.main,
             }}
           >
-            <Box
-              component="p"
-            >
-              {wallet.balance}
-            </Box>
+            {wallet.balance.unconfirmed === 0
+              ? <Box
+                component="p"
+                sx={{
+                  fontSize: {
+                    //xs: '2.5rem',
+                    xs: '15vw',
+                    sm: '5rem',
+                    //md: '5rem',
+                    //lg: '5rem',
+                  }
+                }}
+              >
+                {wallet.balance.confirmed}
+              </Box>
+              : <Box
+                component="p"
+                sx={{
+                  fontSize: {
+                    xs: '7.5vw',
+                    sm: '3rem',
+                  }
+                }}
+              >
+                {wallet.balance.confirmed} + {wallet.balance.unconfirmed}
+              </Box>
+            }
           </HistoryLink>
           <Box
             ml="0.3rem"
-            mb="1.5rem"
+            //mb="1.5rem"
             fontSize="2rem"
             display="flex"
             component="p"
+            sx={{
+              fontSize: {
+                xs: '6vw',
+                sm: '2rem',
+              },
+              marginBottom: {
+                xs: '4.5vw',
+                sm: '1.5rem',
+              }
+            }}
           >
             Sats
           </Box>
         </Box>
       </Box>
+
       <Box
         marginTop="15vh"
         display="flex"
@@ -73,6 +105,7 @@ const Home = (): JSX.Element => {
         </Box>
       </Box>
 
+
     </Box>
   )
 }
@@ -88,4 +121,4 @@ const HistoryLink = styled(Link)`
   }
 `
 
-export default Home;
+export default Home

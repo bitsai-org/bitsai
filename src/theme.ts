@@ -1,4 +1,5 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles'
+import ReggaeOneRegular from './assets/fonts/ReggaeOne-Regular.ttf'
 
 
 const palette = {
@@ -35,6 +36,11 @@ const palette = {
 const components = {
   MuiCssBaseline: {
     styleOverrides: `
+      @font-face {
+        font-family: 'ReggaeOne';
+        src: local('ReggaeOne'), url(${ReggaeOneRegular}) format('truetype');
+      }
+
       .MuiSwitch-track {
         background-color: #424242 !important;
       }

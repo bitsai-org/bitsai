@@ -1,3 +1,4 @@
+import React from 'react'
 import Box from '@mui/material/Box'
 import theme from '../../theme'
 
@@ -22,7 +23,7 @@ const Summary = (props: Props): JSX.Element => {
         <Box>
           <Box>ToSend</Box>
           <Box>Fee</Box>
-          
+
           <Box mt="1rem">TOTAL</Box>
         </Box>
         <Box ml="1rem">

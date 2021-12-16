@@ -1,12 +1,10 @@
-import {useState} from 'react'
+import React, {useState} from 'react'
 import styled from '@emotion/styled'
 import theme from '../theme'
 
-import auth from '../persist/auth'
 import walletUtils from '../lib/walletUtils'
 
 import * as bip39 from 'bip39'
-import CryptoJS from 'crypto-js'
 
 import MnemonicInfo from '../components/GenerateWallet/MnemonicInfo'
 
@@ -77,11 +75,16 @@ const ExistingSeed = (): JSX.Element => {
   return (
     <>
       <Box
-        fontSize="2rem"
         display="flex"
         justifyContent="center"
         color={theme.palette.primary.main}
         mb="1rem"
+        sx={{
+          fontSize: {
+            xs: '6vw',
+            sm: '2rem',
+          }
+        }}
       >
         <h2>
           Existing Seed
@@ -101,7 +104,7 @@ const ExistingSeed = (): JSX.Element => {
                 sm: '60%',
                 md: '40%',
                 lg: '30%',
-            }
+              }
             }}
           >
             {mnemonicSeed === undefined
@@ -193,7 +196,7 @@ const ExistingSeed = (): JSX.Element => {
 
 const guessLanguage = (mnemonicSeedWords: Array<string>): string => {
   let resLanguage = 'english'
-  for (let language in bip39.wordlists) {
+  for (const language in bip39.wordlists) {
     //if (['EN', 'JA'].includes(language))
     //continue
     if (bip39.wordlists[language].includes(mnemonicSeedWords[0])) {

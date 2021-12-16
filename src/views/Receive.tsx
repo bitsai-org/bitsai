@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react'
 import { useSelector } from 'react-redux'
 import QRCode from 'qrcode'
+import {CopyToClipboard} from 'react-copy-to-clipboard'
+
 import theme from '../theme'
 
 import CopyCpNotification from '../components/Receive/CopyCpNotification'
@@ -8,10 +10,8 @@ import CopyCpNotification from '../components/Receive/CopyCpNotification'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import styled from '@emotion/styled'
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles'
 
-import FileCopyIcon from '@mui/icons-material/FileCopy'
-import IconButton from '@mui/material/IconButton'
 import Button from '@mui/material/Button'
 
 import {Wallet, Address} from '../lib/walletUtils'
@@ -38,14 +38,10 @@ const Receive = (): JSX.Element => {
     return state.walletSlice.wallet
   })
 
-  const classes = useStyles();
+  const classes = useStyles()
 
   const handleClickCopyCp = () => {
     setVisibleNotification(true)
-    if (navigator.clipboard)
-      return navigator.clipboard.writeText(generatedAddress)
-    else
-      return document.execCommand('copy', true, generatedAddress)
   }
 
   const generateAddress = (newUnusedAddresses: Array<Address>) => {
@@ -93,12 +89,17 @@ const Receive = (): JSX.Element => {
 
   return (
     <>
-      <Box 
-        fontSize="2rem" 
-        mb="2rem" 
-        display="flex" 
+      <Box
+        mb="2rem"
+        display="flex"
         justifyContent="center"
         color={theme.palette.primary.main}
+        sx={{
+          fontSize: {
+            xs: '6vw',
+            sm: '2rem',
+          }
+        }}
       >
         <h2>
           Receive satoshis
@@ -122,28 +123,33 @@ const Receive = (): JSX.Element => {
         >
           <Box
             component="img"
-            src={qrCodeUrl} 
+            src={qrCodeUrl}
             alt="qrcode-img"
           />
-          <TextField_
-            variant="filled"
-            inputProps={{
-              readOnly: true,
-              className: classes.input,
-            }}
-            label="Address"
-            value={generatedAddress}
-            onClick={handleClickCopyCp}
-            sx={{
-              width: '100%',
-              marginTop: '1rem',
-            }}
-          />
+          <CopyToClipboard
+            text={generatedAddress}
+          >
+            <TextField_
+              variant="filled"
+              inputProps={{
+                readOnly: true,
+                className: classes.input,
+              }}
+              label="Address"
+              value={generatedAddress}
+              onClick={handleClickCopyCp}
+              sx={{
+                width: '100%',
+                marginTop: '1rem',
+              }}
+            />
+          </CopyToClipboard>
+
           <CopyCpNotification
             open={visibleNotification}
             onClose={(open)=>{handleCloseNotification(open)}}
           />
-          <Box 
+          <Box
             mt="1rem"
           >
             <Button
@@ -161,7 +167,7 @@ const Receive = (): JSX.Element => {
 }
 
 const getUnusedAddresses = (addresses: Array<Address>): Array<Address> => {
-  let unusedAddresses: Array<Address> = []
+  const unusedAddresses: Array<Address> = []
   for (const address of addresses)
     if (! address.used)
       unusedAddresses.push(address)
@@ -170,9 +176,9 @@ const getUnusedAddresses = (addresses: Array<Address>): Array<Address> => {
 
 const randomInt= (min: number, max: number): number => {
   // Inclusive random integer
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
+  min = Math.ceil(min)
+  max = Math.floor(max)
+  return Math.floor(Math.random() * (max - min + 1) + min) //The maximum is inclusive and the minimum is inclusive
 }
 
-export default Receive;
+export default Receive

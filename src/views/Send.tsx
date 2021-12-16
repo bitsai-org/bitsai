@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react'
+import React, {useState, useEffect} from 'react'
 import {useSelector} from 'react-redux'
 import theme from '../theme'
 
@@ -23,12 +23,17 @@ const Send = (): JSX.Element => {
 
   return (
     <>
-      <Box 
-        fontSize="2rem" 
-        mb="2rem" 
-        display="flex" 
+      <Box
+        mb="2rem"
+        display="flex"
         justifyContent="center"
         color={theme.palette.primary.main}
+        sx={{
+          fontSize: {
+            xs: '6vw',
+            sm: '2rem',
+          }
+        }}
       >
         <h2>
           Send satoshis
@@ -58,4 +63,4 @@ const Send = (): JSX.Element => {
   )
 }
 
-export default Send;
+export default Send

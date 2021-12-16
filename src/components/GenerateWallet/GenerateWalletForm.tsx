@@ -1,31 +1,14 @@
-import React, {useState, useEffect} from 'react'
-import { passwordStrength } from 'check-password-strength'
+import React, {useState} from 'react'
 
 import CredentialsInputs, {CredentialsInputsType} from '../CredentialsInputs'
 
 //import styled from '@emotion/styled'
-import styled from '@emotion/styled'
 
 import Box from '@mui/material/Box'
-import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import InputLabel from '@mui/material/InputLabel'
-import FormControl from '@mui/material/FormControl';
-
-const TextField_ = styled(TextField)`
-  //background-color: white;
-  //background-color: #ebdbb2;
-  width: 100%;
-`
-
-const Select_ = styled(Select)`
-  background-color: white;
-  height: 3rem;
-  width: 13rem;
-  padding-left: 0.7rem;
-`
 
 interface Credentials {
   walletName: string,

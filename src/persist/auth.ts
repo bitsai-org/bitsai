@@ -1,6 +1,4 @@
 //import {useSelector, useDispatch} from 'react-redux'
-import CryptoJS from 'crypto-js'
-
 import {Wallet} from '../lib/walletUtils'
 import store, {authActions, walletActions} from '../store/store'
 
@@ -9,8 +7,8 @@ interface Auth {
   wallet: Wallet | undefined,
 }
 
-const checkAuthentication = () => {
-  let res: string | null = sessionStorage.getItem('auth')
+const checkAuthentication = (): void => {
+  const res: string | null = sessionStorage.getItem('auth')
   if (res === null) {
     deAuthenticate()
   } else {
@@ -27,24 +25,24 @@ const checkAuthentication = () => {
   }
 }
 
-const authenticate = (wallet: Wallet) => {
-    setAuthWallet(wallet)
+const authenticate = (wallet: Wallet): void => {
+  setAuthWallet(wallet)
 
-    store.dispatch(authActions.authenticate())
+  store.dispatch(authActions.authenticate())
 
-    store.dispatch(walletActions.setWallet({
-      wallet: wallet,
-    }))
+  store.dispatch(walletActions.setWallet({
+    wallet: wallet,
+  }))
 }
 
-const deAuthenticate = () => {
+const deAuthenticate = (): void => {
   clearAuthWallet()
 
   store.dispatch(authActions.deAuthenticate())
   store.dispatch(walletActions.clearWallet())
 }
 
-const setAuthWallet = (wallet: Wallet) => {
+const setAuthWallet = (wallet: Wallet): void => {
   const auth: Auth = {
     isAuthenticated: true,
     wallet,

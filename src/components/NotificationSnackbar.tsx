@@ -10,10 +10,12 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(x)
 
 interface Props {
   open: boolean,
+  msg: string,
+  severity: 'error' | 'info' | 'warning',
   onClose: (open: boolean) => void,
 }
 
-const CopyCpNotification = (props: Props): JSX.Element => {
+const NotificationSnackbar = (props: Props): JSX.Element => {
 
   const handleClose = (
     event: React.SyntheticEvent | Event,
@@ -40,13 +42,13 @@ const CopyCpNotification = (props: Props): JSX.Element => {
       >
         <Alert
           onClose={handleClose}
-          severity="info"
+          severity={props.severity}
         >
-          Address copied to clipboard
+          {props.msg}
         </Alert>
       </Snackbar>
     </>
   )
 }
 
-export default CopyCpNotification
+export default NotificationSnackbar

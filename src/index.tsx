@@ -1,15 +1,15 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from 'react'
+import ReactDOM from 'react-dom'
 import {Provider} from 'react-redux'
 import theme from './theme'
 
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider } from '@mui/material/styles'
+import CssBaseline from '@mui/material/CssBaseline'
 
-import App from './App';
+import App from './App'
 import store from './store/store'
-import './index.css';
-import reportWebVitals from './reportWebVitals';
+import './index.css'
+import reportWebVitals from './reportWebVitals'
 
 
 
@@ -23,6 +23,6 @@ ReactDOM.render(
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')
-);
+)
 
-reportWebVitals();
+reportWebVitals()

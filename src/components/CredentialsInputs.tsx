@@ -7,6 +7,8 @@ import styled from '@emotion/styled'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 
+import persitedData, {EncryptedWallet} from '../persist/data'
+
 const TextField_ = styled(TextField)`
   width: 100%;
 `
@@ -25,6 +27,9 @@ interface Props {
 
 const CredentialsInputs = (props: Props): JSX.Element => {
   const [walletName, setWalletName] = useState('')
+  const [nonExistantWalletName, setNonExistantWalletName] = useState<boolean>(false)
+
+
   const [password, setPassword] = useState('')
   const [repeatedPassword, setRepeatedPassword] = useState('')
   const [incorrectPassword, setIncorrectPassword] = useState(false)
@@ -32,12 +37,18 @@ const CredentialsInputs = (props: Props): JSX.Element => {
 
   const [credentialsOk, setCredentialsOk] = useState(false)
 
-
   const handleWalletName = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newWalletName = event.target.value
-    setWalletName(newWalletName)
+
+    //replace whitespace by underscores (_) so that in case of someone pasting a
+    //walletname containing whitespaces it replace them autimatically with underscores
+    const newWalletNameTrimmed = newWalletName.trim().replace(/\s+/g,'_')
+    setNonExistantWalletName(
+      validateWalletName(newWalletNameTrimmed)
+    )
+    setWalletName(newWalletNameTrimmed)
     props.onChange({
-      walletName: newWalletName,
+      walletName: newWalletNameTrimmed,
       password: password,
       ok: credentialsOk,
     })
@@ -52,6 +63,7 @@ const CredentialsInputs = (props: Props): JSX.Element => {
       ok: credentialsOk,
     })
   }
+
   const handleRepeatedPassword = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newRepeatedPassword = event.target.value
     setRepeatedPassword(newRepeatedPassword)
@@ -68,6 +80,7 @@ const CredentialsInputs = (props: Props): JSX.Element => {
       && password !== ''
       && repeatedPassword !== ''
       && password === repeatedPassword
+      && nonExistantWalletName === true
     ) {
       newCredentialsOk = true
     } else {
@@ -93,6 +106,9 @@ const CredentialsInputs = (props: Props): JSX.Element => {
           variant="filled"
           value={walletName}
           onChange={handleWalletName}
+
+          helperText={!nonExistantWalletName && walletName !== '' ? 'Name already exists.' : ''}
+          error={!nonExistantWalletName && walletName !== ''}
         />
       </Box>
       <Box mt="1rem">
@@ -122,6 +138,32 @@ const CredentialsInputs = (props: Props): JSX.Element => {
     </Box>
   )
 }
+
+const validateWalletName = (newWalletName: string): boolean => {
+  /*
+   * always get existing wallet list on each submit so that in case
+   * of another persited data change from other app instances we
+   * get the updated new wallet list.
+   *
+   * Although this method is inefficient as it query the data from disk on each
+   * change of `newWalletName`, in contrast to just checking one time on submit.
+   * Yet it let us have an awesome UX, where if a name is incorrect it tell us
+   * on the fly.
+   *
+   * So in this case ------> UX > Performance
+   * :)))))
+   */
+
+  const encryptedWallets: Array<EncryptedWallet> = persitedData.getEncryptedWallets()
+
+  let walletNamesList = []
+  walletNamesList = encryptedWallets.map(
+    (item: EncryptedWallet) => item.walletName
+  )
+
+  return ! walletNamesList.includes(newWalletName)
+}
+
 
 export type {CredentialsInputsType}
 export default CredentialsInputs

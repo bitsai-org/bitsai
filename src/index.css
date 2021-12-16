@@ -5,20 +5,10 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  /*background-color: #a35c20;
-  color: #ebc19c;*/
-
-
-  /*background-color: #282828;*/
-  /*background: rgb(255,255,255);*/
-  /*background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(235,219,178,1) 100%);*/
-
-  /*color: #ebdbb2;*/
 }
 
 * {
   margin: 0;
-  padding:0;
+  padding: 0;
   box-sizing: border-box;
 }

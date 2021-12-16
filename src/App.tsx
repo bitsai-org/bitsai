@@ -1,7 +1,7 @@
-import { HashRouter as Router, Switch, Route, Link, Redirect} from "react-router-dom"
-import {useEffect} from 'react'
-import {useSelector} from 'react-redux'
-import theme from './theme'
+import React, {useEffect} from 'react'
+import { HashRouter as Router, Switch, Route, Link, Redirect} from 'react-router-dom'
+import {useSelector, useDispatch} from 'react-redux'
+import {authActions} from './store/store'
 
 import styled from '@emotion/styled'
 
@@ -17,12 +17,14 @@ import HistoryC from './views/HistoryC'
 
 import Box from '@mui/material/Box'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-import LockIcon from '@mui/icons-material/Lock'
 import IconButton from '@mui/material/IconButton'
-import RefreshIcon from '@mui/icons-material/Refresh'
 
 import auth from './persist/auth'
 import walletUtils from './lib/walletUtils'
+
+import NotificationSnackbar from './components/NotificationSnackbar'
+
+import Navbar from './components/Navbar'
 
 const StyledLink = styled(Link)`
   text-decoration: none !important;
@@ -77,58 +79,85 @@ const NotLogedInRoutes = (): JSX.Element => {
       </Route>
       <Redirect to="/"/>
     </Box>
-  );
+  )
 }
 
-const handleLockWallet = () => {
-  auth.deAuthenticate()
-}
 const LoggedInRoutes = (): JSX.Element => {
-  const walletIsSyncing = useSelector((state: any): boolean => {
-    return state.authSlice.walletIsSyncing
+  const dispatch = useDispatch()
+
+  const [visibleNotification, setVisibleNotification] = React.useState(false)
+  const [notificationMsg, setNotificationMsg] = React.useState<undefined | string>(undefined)
+  const [notificationSeverity, setNotificationSeverity]
+  = React.useState<'error' | 'info' | 'warning'>('info')
+
+  const errorStack: Array<string> = useSelector((state: any) => {
+    return state.authSlice.errorStack
+  })
+  const infoMsg : string = useSelector((state: any) => {
+    return state.authSlice.infoMsg
+  })
+  const warningMsg: string = useSelector((state: any) => {
+    return state.authSlice.warningMsg
   })
 
-  const handleRefresh = () => {
-    if (walletIsSyncing)
-      console.log('Wallet is already syncing...')
-    else
-      walletUtils.syncWallet()
+  useEffect(() => {
+    if (infoMsg !== undefined) {
+      setNotificationSeverity('info')
+      setNotificationMsg(infoMsg)
+      setVisibleNotification(true)
+      dispatch(authActions.clearInfoMsg())
+    }
+  }, [infoMsg])
+
+  useEffect(() => {
+    if (warningMsg !== undefined) {
+      setNotificationSeverity('warning')
+      setNotificationMsg(warningMsg)
+      setVisibleNotification(true)
+      dispatch(authActions.clearWarningMsg())
+    }
+  }, [warningMsg])
+
+  useEffect(() => {
+    if (errorStack.length > 0) {
+      for (const errorMsg of errorStack) {
+        setNotificationSeverity('error')
+        setNotificationMsg(errorMsg)
+        setVisibleNotification(true)
+      }
+      dispatch(authActions.cleanErrorStack())
+    }
+  }, [errorStack])
+
+  const handleCloseNotification = (visibility: boolean) => {
+    setVisibleNotification(visibility)
   }
 
   return (
     <Box key="loggedIn">
+      <NotificationSnackbar
+        open={visibleNotification}
+        onClose={(open)=>{handleCloseNotification(open)}}
+        severity={notificationSeverity}
+        msg={notificationMsg!}
+      />
+      <Navbar />
+
       <Route exact path="/">
-        <Box textAlign="end">
-          <IconButton onClick={handleRefresh} size="large">
-            <RefreshIcon color="primary"/>
-          </IconButton>
-          <IconButton onClick={handleLockWallet} size="large">
-            <LockIcon color="primary"/>
-          </IconButton>
-        </Box>
         <Home />
       </Route>
       <Route exact path="/send">
-        <StyledLink to="/">
-          <IconButton color="primary" size="large"><ArrowBackIcon/></IconButton>
-        </StyledLink>
         <Send/>
       </Route>
       <Route exact path="/receive">
-        <StyledLink to="/">
-          <IconButton color="primary" size="large"><ArrowBackIcon/></IconButton>
-        </StyledLink>
         <Receive/>
       </Route>
       <Route exact path="/history">
-        <StyledLink to="/">
-          <IconButton color="primary" size="large"><ArrowBackIcon/></IconButton>
-        </StyledLink>
         <HistoryC/>
       </Route>
       <Redirect to="/"/>
     </Box>
-  );
+  )
 }
 
-export default App;
+export default App

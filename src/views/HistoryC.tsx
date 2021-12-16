@@ -1,7 +1,6 @@
 import React from 'react'
 import theme from '../theme'
 
-import MuiHistoryTable from '../components/HistoryC/MuiHistoryTable'
 import HistoryTable from '../components/HistoryC/HistoryTable'
 
 import Box from '@mui/material/Box'
@@ -10,12 +9,17 @@ const HistoryC = (): JSX.Element => {
 
   return (
     <>
-      <Box 
-        fontSize="2rem" 
-        mb="2rem" 
-        display="flex" 
+      <Box
+        mb="2rem"
+        display="flex"
         justifyContent="center"
         color={theme.palette.primary.main}
+        sx={{
+          fontSize: {
+            xs: '6vw',
+            sm: '2rem',
+          }
+        }}
       >
         <h2>
           Transaction History
@@ -29,4 +33,4 @@ const HistoryC = (): JSX.Element => {
   )
 }
 
-export default HistoryC;
+export default HistoryC

@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react'
+import React, {useState, useEffect} from 'react'
 import {Link} from 'react-router-dom'
 import theme from '../theme'
 
@@ -6,41 +6,73 @@ import Login from '../components/FirstPage/Login'
 
 //import theme from './../theme'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
-import SpaIcon from '@mui/icons-material/Spa';
+import SpaIcon from '@mui/icons-material/Spa'
 
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import styled from '@emotion/styled'
 
-import persistedWallet from '../persist/data'
+import persistedData, {EncryptedWallet} from '../persist/data'
+
+import { ReactComponent as LogoSvg} from '../assets/images/owl-only.svg'
+
+const StyledLink = styled(Link)`
+  text-decoration: none !important;
+`
 
 const FirstPage = (): JSX.Element => {
 
   const [encryptedWallet, setEncryptedWallet] = useState<string | undefined>(undefined)
+  const [encryptedWallets, setEncryptedWallets] = useState<
+    Array<EncryptedWallet> | undefined
+  >(undefined)
 
   useEffect(() => {
-    const res = persistedWallet.getEncryptedWallet()
-    if (res)
-      setEncryptedWallet(res)
+    const res = persistedData.getEncryptedWallets()
+    setEncryptedWallets(res)
+    if (res.length > 0)
+      setEncryptedWallet(res[0].encryptedWallet)
   }, [])
+
+  const handleWalletName = (walletIndex: number) => {
+    setEncryptedWallet(
+      encryptedWallets![walletIndex].encryptedWallet
+    )
+  }
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center">
       <Box
-        mt="10vh"
-        mb="4rem"
-        fontSize="5rem"
+        mb="2rem"
         color={theme.palette.primary.main}
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+
         sx={{
           marginTop: {
-            xs: '10vh',
+            xs: '5vh',
             //sm: '60%',
-            md: '20vh',
+            md: '10vh',
             //lg: '30%',
           }
         }}
       >
-        BitSai
+        <LogoSvg
+          style={{
+            width: '8rem',
+          }}
+        />
+        <Box
+          fontSize="3rem"
+          sx={{
+            fontFamily: 'ReggaeOne',
+            userSelect: 'none',
+          }}
+          textAlign='center'
+        >
+          BitSai
+        </Box>
       </Box>
 
       <Box
@@ -61,6 +93,8 @@ const FirstPage = (): JSX.Element => {
         <Login
           walletName="ado-btc"
           encryptedWallet={encryptedWallet}
+          encryptedWallets={encryptedWallets}
+          onWalletNameChange={(walletIndex)=>{handleWalletName(walletIndex)}}
         />
         }
 
@@ -79,10 +113,10 @@ const FirstPage = (): JSX.Element => {
               marginLeft: '2rem',
             }}
           >
-              <Button variant="contained" size="large" endIcon={<SpaIcon/>}>
+            <Button variant="contained" size="large" endIcon={<SpaIcon/>}>
                 Existing Seed
-              </Button>
-            </StyledLink>
+            </Button>
+          </StyledLink>
         </Box>
       </Box>
 
@@ -90,8 +124,5 @@ const FirstPage = (): JSX.Element => {
   )
 }
 
-const StyledLink = styled(Link)`
-  text-decoration: none !important;
-`
 
-export default FirstPage;
+export default FirstPage

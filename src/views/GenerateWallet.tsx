@@ -1,11 +1,9 @@
-import {useState} from 'react'
+import React, {useState} from 'react'
 import theme from '../theme'
 
-import auth from '../persist/auth'
 import walletUtils from '../lib/walletUtils'
 
 import * as bip39 from 'bip39'
-import CryptoJS from 'crypto-js'
 
 import GenerateWalletForm, {Credentials} from '../components/GenerateWallet/GenerateWalletForm'
 import MnemonicInfo from '../components/GenerateWallet/MnemonicInfo'
@@ -42,12 +40,17 @@ const GenerateWallet = (): JSX.Element => {
 
   return (
     <>
-      <Box 
-        fontSize="2rem"
+      <Box
         mb="2rem"
         display="flex"
         justifyContent="center"
         color={theme.palette.primary.main}
+        sx={{
+          fontSize: {
+            xs: '6vw',
+            sm: '2rem',
+          }
+        }}
       >
         <h2>
           Generate Wallet

@@ -1,5 +1,6 @@
-import {Transaction} from '../../lib/walletUtils'
+import React from 'react'
 
+import {Transaction} from '../../lib/walletUtils'
 import Box from '@mui/material/Box'
 
 
@@ -8,8 +9,8 @@ interface Props {
 }
 
 const HistoryTableRow = (props: Props): JSX.Element => {
-  let cols: any;
-  const colComponent = props.transaction ? 'div' : 'h3';
+  let cols: any
+  const colComponent = props.transaction ? 'div' : 'h3'
   if (props.transaction) {
     const transaction = props.transaction
     if (transaction.time)
@@ -39,6 +40,12 @@ const HistoryTableRow = (props: Props): JSX.Element => {
         display="flex"
         justifyContent="center"
         flexDirection="row"
+        sx={{
+          fontSize: {
+            xs: '3vw',
+            sm: '1rem',
+          }
+        }}
       >
         <Box
           //component="h3"
@@ -46,7 +53,7 @@ const HistoryTableRow = (props: Props): JSX.Element => {
           width="25%"
         >
           {cols[0]}
-       </Box>
+        </Box>
         <Box
           component={colComponent}
           width="25%"
@@ -77,4 +84,4 @@ const unixTimestampToDate = (unixTimestamp: number): string => {
   return date.toLocaleString('en-GB')
 }
 
-export default HistoryTableRow;
+export default HistoryTableRow

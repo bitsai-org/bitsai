@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react'
+import React, {useState, useEffect} from 'react'
 import {useSelector} from 'react-redux'
 import theme from '../../theme'
 
@@ -7,14 +7,12 @@ import styled from '@emotion/styled'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
-import Checkbox from '@mui/material/Checkbox'
-import Switch from '@mui/material/Switch';
+import Switch from '@mui/material/Switch'
 
-import AddressInputs from './AddressInputs'
 import Summary from './Summary'
 import FeeSlider from './FeeSlider'
 
-import PasswordPopup from '../Home/PasswordPopup'
+import PasswordPopup from '../PasswordPopup'
 
 import walletUtils, {AddressBalance, Wallet, FeeEstimate} from '../../lib/walletUtils'
 
@@ -27,6 +25,8 @@ interface Props {
   addressesBalances: Array<AddressBalance>
 }
 
+// I need those props for a future functionality
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const Send = (props: Props): JSX.Element => {
   const wallet = useSelector((state: any): Wallet => {
     return state.walletSlice.wallet
@@ -117,14 +117,14 @@ const Send = (props: Props): JSX.Element => {
   const handleSats = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newSats = Number(event.target.value)
     setSats(newSats)
-    if (newSats > wallet.balance || newSats <= 0) {
+    if (newSats > wallet.balance.confirmed || newSats <= 0) {
       setInvalidSats(true)
       if (newSats === 0)
-        setInvalidSatsMsg(`Sats can't be equal to 0`)
+        setInvalidSatsMsg('Sats can\'t be equal to 0')
       else if (newSats < 0)
-        setInvalidSatsMsg(`Sats can't be negative`)
-      else if (newSats > wallet.balance)
-        setInvalidSatsMsg(`Sats can't be more than balance`)
+        setInvalidSatsMsg('Sats can\'t be negative')
+      else if (newSats > wallet.balance.confirmed)
+        setInvalidSatsMsg('Sats can\'t be more than balance')
     } else {
       setInvalidSats(false)
       setInvalidSatsMsg('')
@@ -142,6 +142,7 @@ const Send = (props: Props): JSX.Element => {
     newSats: number,
     newFeeRate: number,
   ) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, inputsSats, newFee, newTxSize] = walletUtils.getInputAddresses(
       newSats,
       newFeeRate,
@@ -150,7 +151,7 @@ const Send = (props: Props): JSX.Element => {
     //console.log(_, inputsSats)
     if (
       inputsSats === 0
-      || newFee + newSats > wallet.balance
+      || newFee + newSats > wallet.balance.confirmed
       //|| fee === 0
       //|| newTxSize === 0
     ) {
@@ -184,7 +185,7 @@ const Send = (props: Props): JSX.Element => {
 
     if (
       ! invalidAddress
-      && wallet.balance + fee >= sats
+      && wallet.balance.confirmed + fee >= sats
       && feeRate >= 0
     ) {
       const [newRawTx, newFee, newTxSize] = walletUtils.generateTransaction(
@@ -194,7 +195,7 @@ const Send = (props: Props): JSX.Element => {
         wallet,
         mnemonicSeed,
       )
-      console.log(newRawTx)
+      //console.log(newRawTx)
       setFee(newFee)
       setTxSize(newTxSize)
       setRawTx(newRawTx)
@@ -208,7 +209,7 @@ const Send = (props: Props): JSX.Element => {
     try {
       if (rawTx) {
         const txId = await walletUtils.broadcastTransaction(rawTx)
-        console.log(txId)
+        console.log('TXID:', txId)
         await walletUtils.syncWallet()
         window.location.href = '/#/'
       }
@@ -266,24 +267,24 @@ const Send = (props: Props): JSX.Element => {
 
         {automaticFeeRate
           ? <Box component="p" mb="0.5rem">
-              <b>{feeRate}</b> sat/byte
-            </Box>
+            <b>{feeRate}</b> sat/byte
+          </Box>
           : <FeeSlider
-              onChange={(newFeeRate)=>{handleFeeRate(newFeeRate)}}
-              feeRate={feeRate}
-              recommendedFeeRate={recommendedFeeRate}
-              disabled={signed}
-            />
+            onChange={(newFeeRate)=>{handleFeeRate(newFeeRate)}}
+            feeRate={feeRate}
+            recommendedFeeRate={recommendedFeeRate}
+            disabled={signed}
+          />
         }
         {insufficientFunds
           ? <Box color={theme.palette.error.main}>
-              Can't afford this fee!
-            </Box>
+              Can&apos;t afford this fee!
+          </Box>
           : <Box component="p">
-              <i>
-                {feeDescription}
-              </i>
-            </Box>
+            <i>
+              {feeDescription}
+            </i>
+          </Box>
         }
       </Box>
       {/*<Box mt="1rem">
@@ -291,7 +292,7 @@ const Send = (props: Props): JSX.Element => {
           addressesBalances={props.addressesBalances}
         />
       </Box>*/}
-      <Box 
+      <Box
         mt="2rem"
       >
         <Summary
@@ -366,11 +367,11 @@ const generateFeeDescrption = (block: number) => {
     else
       range = `~${min} to ${max} hours`
   }
-  let blockUnits = `blocks`
+  let blockUnits = 'blocks'
   if (block === 1)
-    blockUnits = `block`
+    blockUnits = 'block'
 
   return `Transaction will be processed in ${block} ${blockUnits} (${range})`
 }
 
-export default Send;
+export default Send

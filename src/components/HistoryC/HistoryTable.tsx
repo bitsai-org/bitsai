@@ -1,7 +1,7 @@
-import {useState, useEffect} from 'react'
+import React, {useState, useEffect} from 'react'
 import {useSelector} from 'react-redux'
 
-import {Transaction, Wallet} from '../../lib/walletUtils'
+import { Transaction } from '../../lib/walletUtils'
 
 import Box from '@mui/material/Box'
 import HistoryTableRow from '../../components/HistoryC/HistoryTableRow'
@@ -14,7 +14,7 @@ const HistoryTable = (): JSX.Element => {
 
   useEffect(() => {
     //sort transactions by time of transaction
-    let clonedTransactions = [...transactions]
+    const clonedTransactions = [...transactions]
     clonedTransactions.sort((e1, e2) => {
       if (e1.time && e2.time)
         return e2.time - e1.time
@@ -51,4 +51,4 @@ const HistoryTable = (): JSX.Element => {
   )
 }
 
-export default HistoryTable;
+export default HistoryTable

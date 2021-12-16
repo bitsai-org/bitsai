@@ -1,24 +1,24 @@
-import React, {useState, useEffect} from 'react'
-import CryptoJS from 'crypto-js'
+import React, {useState} from 'react'
 
 import auth from '../../persist/auth'
-import walletUtils, {Wallet} from '../../lib/walletUtils'
+import {EncryptedWallet} from '../../persist/data'
+
+import walletUtils  from '../../lib/walletUtils'
+import WalletsList from '../Login/WalletsList'
 
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
-import LockOpenIcon from '@mui/icons-material/LockOpen';
-
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-
-
-import styled from '@emotion/styled'
+import LockOpenIcon from '@mui/icons-material/LockOpen'
 
 interface Props {
   walletName: string,
   encryptedWallet: string,
+  encryptedWallets?: Array<EncryptedWallet>,
+
+  onWalletNameChange: (walletIndex: number) => void,
 }
+
 const Login = (props: Props): JSX.Element => {
   const [password, setPassword] = useState('')
   const [incorrectPassword, setIncorrectPassword] = useState(false)
@@ -36,22 +36,9 @@ const Login = (props: Props): JSX.Element => {
       setIncorrectPassword(true)
   }
 
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = (event: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
-    console.log(event)
-    setAnchorEl(null);
-  };
-  const handleWalletNameMenu = (event: React.FormEvent<HTMLDivElement>) => {
-    //console.log(`/////////`)
-    //console.log(event)
+  const handleWalletName = (newWalletIndex: number) => {
+    props.onWalletNameChange(newWalletIndex)
   }
-
 
   return(
     <>
@@ -64,49 +51,15 @@ const Login = (props: Props): JSX.Element => {
           display="flex"
         >
           <Box
-            mb="0.2rem"
             component="h2"
-            //fontSize="1.3rem"
+            mr="0.4rem"
           >
-            Welcome Back!
+            Welcome back,
           </Box>
-          
-          <Box>
-            <Button
-              id="basic-button"
-              aria-controls="basic-menu"
-              aria-haspopup="true"
-              aria-expanded={open ? 'true' : undefined}
-              onClick={handleClick}
-            >
-              <Box 
-                sx={{
-                  textTransform: 'none',
-                }}
-              >
-                Dashboard
-              </Box>
-            </Button>
-            <Menu
-              id="basic-menu"
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-              MenuListProps={{
-                'aria-labelledby': 'basic-button',
-              }}
-              onChange={handleWalletNameMenu}
-            >
-              <MenuItem 
-                onClick={handleClose}
-                value="DIRABAK!"
-              >
-                Profile
-              </MenuItem>
-              <MenuItem onClick={handleClose}>My account</MenuItem>
-              <MenuItem onClick={handleClose}>Logout</MenuItem>
-            </Menu>
-          </Box>
+          <WalletsList
+            encryptedWallets={props.encryptedWallets}
+            onWalletNameChange={(walletIndex)=>{handleWalletName(walletIndex)}}
+          />
         </Box>
 
         <TextField

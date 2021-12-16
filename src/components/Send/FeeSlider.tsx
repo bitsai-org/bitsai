@@ -1,11 +1,10 @@
-import {useState} from 'react';
+import React from 'react'
 import styled from '@emotion/styled'
 
 import Box from '@mui/material/Box'
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import Slider from '@mui/material/Slider';
-import Input from '@mui/material/Input';
+import Grid from '@mui/material/Grid'
+import Slider from '@mui/material/Slider'
+import Input from '@mui/material/Input'
 
 const Input_ = styled(Input)`
   color: #ebc19c;
