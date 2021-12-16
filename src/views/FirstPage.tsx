@@ -64,14 +64,22 @@ const FirstPage = (): JSX.Element => {
           }}
         />
         <Box
-          fontSize="3rem"
           sx={{
             fontFamily: 'ReggaeOne',
-            userSelect: 'none',
           }}
-          textAlign='center'
         >
-          BitSai
+          <Box
+            fontSize="3rem"
+            component="span"
+          >
+            BitSai
+          </Box>
+          <Box
+            fontSize="2rem"
+            component="span"
+          >
+            &nbsp;(unstable)
+          </Box>
         </Box>
       </Box>
 

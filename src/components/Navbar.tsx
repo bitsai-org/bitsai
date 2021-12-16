@@ -45,7 +45,13 @@ const Navbar = (): JSX.Element => {
               userSelect: 'none',
             }}
           >
-              Bitsai
+            Bitsai
+            <Box
+              component="span"
+              fontSize="1rem"
+            >
+              &nbsp;(unstable)
+            </Box>
           </Box>
         </Box>
         : <StyledLink to="/">
