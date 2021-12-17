@@ -47,7 +47,7 @@ module.exports = {
       'error',
       'never'
     ],
-    'no-trailing-spaces': 'error',
+    'no-trailing-spaces': 'warn',
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-explicit-any': 'off'
   }

@@ -1,2 +1,2 @@
-# Bitcoin wallet
-placeholder README
+### TODO
+write a readme (┛❍ᴥ❍ )┛
