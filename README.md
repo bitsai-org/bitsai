@@ -98,7 +98,7 @@ python -m http.server --directory public 8000
 ```bash
 ruby -run -ehttpd public -p8000
 ```
-You are now set! You can access you locally hosted app in `http://localhost:8000`
+You are now set! You can access your locally hosted app in `http://localhost:8000`
 
 ## Support BitSai
 ### Contributing
