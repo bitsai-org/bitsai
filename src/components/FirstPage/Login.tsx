@@ -3,7 +3,7 @@ import React, {useState} from 'react'
 import auth from '../../persist/auth'
 import {EncryptedWallet} from '../../persist/data'
 
-import walletUtils  from '../../lib/walletUtils'
+import bsCrypto from '../../lib/bsCrypto'
 import WalletsList from '../Login/WalletsList'
 
 import Box from '@mui/material/Box'
@@ -29,7 +29,8 @@ const Login = (props: Props): JSX.Element => {
       setIncorrectPassword(false)
   }
   const handleUnlock = () => {
-    const newWallet = walletUtils.decryptWallet(props.encryptedWallet, password)
+    const newWallet = bsCrypto.decryptWallet(props.encryptedWallet, password)
+
     if (newWallet !== undefined)
       auth.authenticate(newWallet)
     else
