@@ -1,4 +1,3 @@
-import CryptoJS from 'crypto-js'
 import axios from 'axios'
 import * as bip39 from 'bip39'
 import * as bitcoin from 'bitcoinjs-lib'
@@ -8,6 +7,7 @@ import store, {authActions, walletActions} from '../store/store'
 import persistedData from '../persist/data'
 import {Credentials} from '../components/GenerateWallet/GenerateWalletForm'
 import notification from './notification'
+import bsCrypto from './bsCrypto'
 
 const bip32 = bitcoin.bip32
 const NETWORK = bitcoin.networks.regtest
@@ -48,43 +48,6 @@ interface Transaction {
   txid: string,
 }
 
-const decryptWallet = (
-  encryptedWallet: string,
-  password: string,
-): Wallet | undefined => {
-  const hashedPassword_SHA256 = CryptoJS.SHA256(password).toString()
-  const res = CryptoJS.AES.decrypt(
-    encryptedWallet,
-    hashedPassword_SHA256,
-  )
-  try {
-    const stringWallet = res.toString(CryptoJS.enc.Utf8)
-    const wallet: Wallet = JSON.parse(stringWallet)
-    return wallet
-  } catch {
-    return undefined
-  }
-}
-
-const decryptMnemonicSeed = (
-  encryptedMnemonicSeed: string,
-  password: string,
-): string | undefined => {
-  const hashedPassword_RIPEMD160 = CryptoJS.RIPEMD160(password).toString()
-  try {
-    const mnemonicSeed = CryptoJS.AES.decrypt(
-      encryptedMnemonicSeed,
-      hashedPassword_RIPEMD160,
-    ).toString(CryptoJS.enc.Utf8)
-    if (mnemonicSeed !== '')
-      return mnemonicSeed
-    else
-      return undefined
-  } catch {
-    return undefined
-  }
-}
-
 const getXpub = (mnemonicSeed: string): string => {
   const seed = bip39.mnemonicToSeedSync(mnemonicSeed)
   let hdNode = bip32.fromSeed(seed)
@@ -95,17 +58,17 @@ const getXpub = (mnemonicSeed: string): string => {
 const generateWallet = (
   credentials: Credentials,
   mnemonicSeed: string,
-): void => {
+): Wallet => {
   /*Use the password hash ripemd160 to encrypt the mnemonic seed
     and sha256 to encrypt the whole wallet
   */
-  const hashedPassword_SHA256 = CryptoJS.SHA256(credentials.password).toString()
-  const hashedPassword_RIPEMD160 = CryptoJS.RIPEMD160(credentials.password).toString()
+  const hashedPassword_SHA256 = bsCrypto.toSHA256(credentials.password)
+  const hashedPassword_RIPEMD160 = bsCrypto.toRIPEMD160(credentials.password)
 
-  const encryptedMnemonicSeed = CryptoJS.AES.encrypt(
+  const encryptedMnemonicSeed = bsCrypto.encryptToString(
     mnemonicSeed,
     hashedPassword_RIPEMD160,
-  ).toString()
+  )
 
   const xPub = getXpub(mnemonicSeed)
   const addresses = initialiseAddresses(xPub)
@@ -121,6 +84,7 @@ const generateWallet = (
 
   persistedData.setWallet_(wallet)
   auth.authenticate(wallet)
+  return wallet
 }
 
 interface AddressInterface {
@@ -437,6 +401,7 @@ const syncWallet = async (): Promise<void> => {
 
     //update the wallet
     wallet = store.getState().walletSlice.wallet
+    console.log(wallet)
 
     persistedData.updateWallet(wallet)
     auth.setAuthWallet(wallet)
@@ -776,81 +741,15 @@ const getFeeEstimates = async (): Promise<Array<BlockstreamFeeEstimate>> => {
   }
 }
 
-//const feeEstimatesJson = `
-//[{
-//"block": 1,
-//"feeRate": 190
-//}, {
-//"block": 2,
-//"feeRate": 180
-//}, {
-//"block": 3,
-//"feeRate": 160
-//}, {
-//"block": 4,
-//"feeRate": 155
-//}, {
-//"block": 5,
-//"feeRate": 144
-//}, {
-//"block": 6,
-//"feeRate": 130
-//}, {
-//"block": 7,
-//"feeRate": 119
-//}, {
-//"block": 8,
-//"feeRate": 108
-//}, {
-//"block": 9,
-//"feeRate": 88
-//}, {
-//"block": 10,
-//"feeRate": 69
-//}, {
-//"block": 11,
-//"feeRate": 55
-//}, {
-//"block": 12,
-//"feeRate": 48
-//}, {
-//"block": 13,
-//"feeRate": 40
-//}, {
-//"block": 14,
-//"feeRate": 33
-//}, {
-//"block": 15,
-//"feeRate": 28
-//}, {
-//"block": 16,
-//"feeRate": 19
-//}, {
-//"block": 17,
-//"feeRate": 15
-//}, {
-//"block": 18,
-//"feeRate": 3
-//}, {
-//"block": 19,
-//"feeRate": 2
-//}, {
-//"block": 20,
-//"feeRate": 1
-//}]
-//`
-
 const walletUtils = {
   generateWallet,
   syncWallet,
   getAddressesBalances: getAddressesConfirmedBalances,
   validateAddress,
   generateTransaction,
-  decryptMnemonicSeed,
   broadcastTransaction,
   getFeeEstimates,
   getInputAddresses,
-  decryptWallet,
 }
 
 export type {
