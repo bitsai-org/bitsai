@@ -8,7 +8,7 @@ import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 
-import walletUtils from '../lib/walletUtils'
+import bsCrypto from '../lib/bsCrypto'
 import MnemonicInfo from './GenerateWallet/MnemonicInfo'
 
 const modalStyle = {
@@ -60,7 +60,7 @@ const PasswordPopup = (props: Props): JSX.Element => {
   }
 
   const handleSumbit = () => {
-    const newMnemonicSeed = walletUtils.decryptMnemonicSeed(
+    const newMnemonicSeed = bsCrypto.decryptMnemonicSeed(
       encryptedMnemonicSeed,
       password,
     )
