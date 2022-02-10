@@ -24,8 +24,6 @@ const setWarning = (msg: string): void => {
   )
 }
 
-
-
 export default {
   setInfo,
   setError,
