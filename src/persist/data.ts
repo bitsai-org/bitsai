@@ -1,4 +1,5 @@
-import CryptoJS from 'crypto-js'
+import bsCrypto from '../lib/bsCrypto'
+
 import {Wallet} from '../lib/walletUtils'
 
 interface EncryptedWallet {
@@ -16,10 +17,10 @@ const getEncryptedWallet = (): string | undefined => {
 }
 
 const setWallet = (wallet: Wallet): void => {
-  const encryptedWallet = CryptoJS.AES.encrypt(
+  const encryptedWallet = bsCrypto.encryptToString(
     JSON.stringify(wallet),
     wallet.hashedPassword_SHA256,
-  ).toString()
+  )
   localStorage.setItem('encryptedWallet', encryptedWallet)
 }
 
@@ -45,10 +46,10 @@ const setWallet_ = (wallet: Wallet): void => {
   if (encryptedWalletsString !== null)
     newEncryptedWallets = JSON.parse(encryptedWalletsString)
 
-  const newEncryptedWalletString = CryptoJS.AES.encrypt(
+  const newEncryptedWalletString = bsCrypto.encryptToString(
     JSON.stringify(wallet),
     wallet.hashedPassword_SHA256,
-  ).toString()
+  )
 
   newEncryptedWallets.push({
     walletName: wallet.name,
@@ -67,10 +68,10 @@ const updateWallet = (wallet: Wallet): void => {
 
   if (encryptedWalletsString !== null) {
     encryptedWallets = JSON.parse(encryptedWalletsString)
-    const newEncryptedWalletString = CryptoJS.AES.encrypt(
+    const newEncryptedWalletString = bsCrypto.encryptToString(
       JSON.stringify(wallet),
       wallet.hashedPassword_SHA256,
-    ).toString()
+    )
     const i = encryptedWallets.findIndex((item) => item.walletName === wallet.name)
     encryptedWallets[i] = {
       walletName: wallet.name,
